@@ -40,9 +40,13 @@ class AlertKeywords(LibraryComponent):
 
         New in SeleniumLibrary 3.0.
         """
-        alert = self._wait_alert(timeout)
-        alert.send_keys(text)
-        self._handle_alert(alert, action)
+        try:
+            alert = self._wait_alert(timeout)
+            alert.send_keys(text)
+            self._handle_alert(alert, action)
+            self.driver.report().step(description='Typed ' + text + ' into alert successfully', message='Type text into alert', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Could not type ' + text + ' into alert ' + str(e), message='Type text into alert', passed=False, screenshot=True)
 
     @keyword
     def alert_should_be_present(self, text='', action=ACCEPT, timeout=None):
@@ -62,8 +66,10 @@ class AlertKeywords(LibraryComponent):
         """
         message = self.handle_alert(action, timeout)
         if text and text != message:
+            self.driver.report().step(description='Alert message should have been ' + text + ' but it was ' + 'message', message='Alert is present', passed=False, screenshot=True)
             raise AssertionError("Alert message should have been '%s' but it "
                                  "was '%s'." % (text, message))
+        self.driver.report().step(description='Alert is present on the page',  message='Alert is present', passed=True, screenshot=False)
 
     @keyword
     def alert_should_not_be_present(self, action=ACCEPT, timeout=0):
@@ -84,8 +90,10 @@ class AlertKeywords(LibraryComponent):
         try:
             alert = self._wait_alert(timeout)
         except AssertionError:
+            self.driver.report().step(description='Alert is not present on the page', message='Alert is not present', passed=True, screenshot=False)
             return
         text = self._handle_alert(alert, action)
+        self.driver.report().step(description='Alert is present on the page', message='Alert is not present', passed=False, screenshot=True)
         raise AssertionError("Alert with message '%s' present." % text)
 
     @keyword
@@ -114,8 +122,12 @@ class AlertKeywords(LibraryComponent):
 
         New in SeleniumLibrary 3.0.
         """
-        alert = self._wait_alert(timeout)
-        return self._handle_alert(alert, action)
+        try:
+            alert = self._wait_alert(timeout)
+            self.driver.report().step(description='Handled alert', message='Handle alert', passed=True, screenshot=False)
+            return self._handle_alert(alert, action)
+        except Exception as e:
+            self.driver.report().step(description='Could not handle alert ' + str(e), message='Handle alert', passed=False, screenshot=True)
 
     def _handle_alert(self, alert, action):
         action = action.upper()
