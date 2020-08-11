@@ -17,7 +17,7 @@
 import time
 import types
 
-from selenium import webdriver
+from src.testproject.sdk.drivers import webdriver
 from selenium.webdriver.support.event_firing_webdriver import EventFiringWebDriver
 
 from SeleniumLibrary.base import keyword, LibraryComponent
@@ -664,15 +664,14 @@ class BrowserManagementKeywords(LibraryComponent):
         """
         self.driver.implicitly_wait(timestr_to_secs(value))
 
+    # Change this function for driver.
     def _make_driver(self, browser, desired_capabilities=None, profile_dir=None,
                      remote=None, options=None, service_log_path=None, executable_path=None):
-        driver = self._webdriver_creator.create_driver(
-            browser=browser, desired_capabilities=desired_capabilities, remote_url=remote, profile_dir=profile_dir,
-            options=options, service_log_path=service_log_path, executable_path=executable_path)
-        driver.set_script_timeout(self.ctx.timeout)
-        driver.implicitly_wait(self.ctx.implicit_wait)
-        if self.ctx.speed:
-            self._monkey_patch_speed(driver)
+        # *********************************************************************** REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+        # CHANGE THIS
+        driver = webdriver.Firefox(token="xMOUq-CTwc12Ru7Vjls1syE6uZ8B7vxcv1KAs55XaOY1", projectname="ROBOT_FRAMEWORK")
+        driver.report().disable_command_reports(True)
+        driver.report().step(message="Created Firefox session", passed=True, description="Created Firefox Webdriver")
         return driver
 
     def _monkey_patch_speed(self, driver):
