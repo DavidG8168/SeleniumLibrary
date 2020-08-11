@@ -667,7 +667,7 @@ class BrowserManagementKeywords(LibraryComponent):
     # Change this function for driver.
     def _make_driver(self, browser, desired_capabilities=None, profile_dir=None,
                      remote=None, options=None, service_log_path=None, executable_path=None):
-        # *********************************************************************** REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+        # *********************************************************************** CHANGE THIS
         # CHANGE THIS
         driver = webdriver.Firefox(token="xMOUq-CTwc12Ru7Vjls1syE6uZ8B7vxcv1KAs55XaOY1", projectname="ROBOT_FRAMEWORK")
         driver.report().disable_command_reports(True)
