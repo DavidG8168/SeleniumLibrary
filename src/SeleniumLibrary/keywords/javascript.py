@@ -66,15 +66,9 @@ class JavaScriptKeywords(LibraryComponent):
         | `Execute JavaScript` | alert(arguments[0]); | ARGUMENTS | 123 |
         | `Execute JavaScript` | ARGUMENTS | 123 | JAVASCRIPT | alert(arguments[0]); |
         """
-        try:
-            js_code, js_args = self._get_javascript_to_execute(code)
-            self._js_logger('Executing JavaScript', js_code, js_args)
-            res = self.driver.execute_script(js_code, *js_args)
-            self.driver.report().step(description='Execute JavaScript', message='Executed JavaScript. Result: ' + str(res), passed=True, screenshot=False)
-            return res
-        except Exception as e:
-            self.driver.report().step(description='Execute JavaScript', message='Could not execute JavaScript. Error: ' + str(e), passed=False, screenshot=True)
-            raise AssertionError("Failed to execute JavaScript")
+        js_code, js_args = self._get_javascript_to_execute(code)
+        self._js_logger('Executing JavaScript', js_code, js_args)
+        return self.driver.execute_script(js_code, *js_args)
 
     @keyword
     def execute_async_javascript(self, *code):
@@ -102,15 +96,9 @@ class JavaScriptKeywords(LibraryComponent):
         | ...         | window.setTimeout(answer, 2000);                |
         | `Should Be Equal` | ${result} | text |
         """
-        try:
-            js_code, js_args = self._get_javascript_to_execute(code)
-            self._js_logger('Executing Asynchronous JavaScript', js_code, js_args)
-            res = self.driver.execute_async_script(js_code, *js_args)
-            self.driver.report().step(description='Execute Async JavaScript', message='Executed Async JavaScript. Result: ' + str(res), passed=True, screenshot=False)
-            return res
-        except Exception as e:
-            self.driver.report().step(description='Execute Async JavaScript', message='Could not execute Async JavaScript. Error: ' + str(e), passed=False, screenshot=True)
-            raise AssertionError("Failed to execute Async JavaScript")
+        js_code, js_args = self._get_javascript_to_execute(code)
+        self._js_logger('Executing Asynchronous JavaScript', js_code, js_args)
+        return self.driver.execute_async_script(js_code, *js_args)
 
     def _js_logger(self, base, code, args):
         message = '%s:\n%s\n' % (base, code)
