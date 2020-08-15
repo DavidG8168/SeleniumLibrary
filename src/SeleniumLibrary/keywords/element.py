@@ -35,7 +35,13 @@ class ElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        return self.find_element(locator)
+        try:
+            res = self.find_element(locator)
+            self.driver.report().step(description='Get Web Element', message='Got web element at locator: ' + locator, passed=True, screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Web Element', message='Could not get web element. Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword(name='Get WebElements')
     def get_webelements(self, locator):
@@ -48,7 +54,14 @@ class ElementKeywords(LibraryComponent):
         list if there are no matching elements. In previous releases, the
         keyword failed in this case.
         """
-        return self.find_elements(locator)
+        try:
+            res = self.find_elements(locator)
+            self.driver.report().step(description='Get Web Elements', message='Got web elements with locator: ' + locator, passed=True, screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Web Elements', message='Could not get elements. Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def element_should_contain(self, locator, expected, message=None, ignore_case=False):
@@ -68,7 +81,12 @@ class ElementKeywords(LibraryComponent):
         Use `Element Text Should Be` if you want to match the exact text,
         not a substring.
         """
-        actual = actual_before = self.find_element(locator).text
+        actual = None
+        try:
+            actual = actual_before = self.find_element(locator).text
+        except Exception as e:
+            self.driver.report().step(description='Element Should Contain', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
         expected_before = expected
         if is_truthy(ignore_case):
             actual = actual.lower()
@@ -77,8 +95,10 @@ class ElementKeywords(LibraryComponent):
             if is_noney(message):
                 message = "Element '%s' should have contained text '%s' but "\
                           "its text was '%s'." % (locator, expected_before, actual_before)
+            self.driver.report().step(description='Element Should Contain', message='Elements does not contain text: ' + str(expected), passed=False, screenshot=True)
             raise AssertionError(message)
         self.info("Element '%s' contains text '%s'." % (locator, expected_before))
+        self.driver.report().step(description='Element Should Contain', message='Element contains text: ' + str(expected), passed=True, screenshot=False)
 
     @keyword
     def element_should_not_contain(self, locator, expected, message=None, ignore_case=False):
@@ -95,7 +115,12 @@ class ElementKeywords(LibraryComponent):
 
         ``ignore_case`` argument new in SeleniumLibrary 3.1.
         """
-        actual = self.find_element(locator).text
+        actual = None
+        try:
+            actual = self.find_element(locator).text
+        except Exception as e:
+            self.driver.report().step(description='Element Should Not Contain', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
         expected_before = expected
         if is_truthy(ignore_case):
             actual = actual.lower()
@@ -104,9 +129,12 @@ class ElementKeywords(LibraryComponent):
             if is_noney(message):
                 message = "Element '%s' should not contain text '%s' but " \
                           "it did." % (locator, expected_before)
+            self.driver.report().step(description='Element Should Not Contain', message='Element contains text: ' + str(expected), passed=False,
+                                      screenshot=True)
             raise AssertionError(message)
         self.info("Element '%s' does not contain text '%s'."
                   % (locator, expected_before))
+        self.driver.report().step(description='Element Should Not Contain', message='Element does not contain text: ' + str(expected), passed=True, screenshot=False)
 
     @keyword
     def page_should_contain(self, text, loglevel='TRACE'):
@@ -120,8 +148,10 @@ class ElementKeywords(LibraryComponent):
         """
         if not self._page_contains(text):
             self.ctx.log_source(loglevel)
+            self.driver.report().step(description='Page Should Contain', message='Page does not contain text: ' + text, passed=False, screenshot=True)
             raise AssertionError("Page should have contained text '%s' "
                                  "but did not." % text)
+        self.driver.report().step(description='Page Should Contain', message='Page contains text: ' + text, passed=True, screenshot=False)
         self.info("Current page contains text '%s'." % text)
 
     @keyword
@@ -151,20 +181,27 @@ class ElementKeywords(LibraryComponent):
 
         The ``limit`` argument is new in SeleniumLibrary 3.0.
         """
-        if is_noney(limit):
-            return self.assert_page_contains(locator, message=message,
-                                             loglevel=loglevel)
-        limit = int(limit)
-        count = len(self.find_elements(locator))
-        if count == limit:
-            self.info('Current page contains {} element(s).'.format(count))
-        else:
-            if is_noney(message):
-                message = ('Page should have contained "{}" element(s), '
-                           'but it did contain "{}" element(s).'
-                           .format(limit, count))
-            self.ctx.log_source(loglevel)
-            raise AssertionError(message)
+        try:
+            if is_noney(limit):
+                return self.assert_page_contains(locator, message=message,
+                                                loglevel=loglevel)
+            limit = int(limit)
+            count = len(self.find_elements(locator))
+            if count == limit:
+                self.info('Current page contains {} element(s).'.format(count))
+            else:
+                if is_noney(message):
+                    message = ('Page should have contained "{}" element(s), '
+                               'but it did contain "{}" element(s).'
+                               .format(limit, count))
+                self.ctx.log_source(loglevel)
+                raise AssertionError(message)
+            self.driver.report().step(description='Page Should Contain Element', message='Page contains element at: ' + str(locator),
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Contain Element', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def locator_should_match_x_times(self, locator, x, message=None, loglevel='TRACE'):
@@ -177,9 +214,13 @@ class ElementKeywords(LibraryComponent):
                            "matched %s time%s."
                            % (locator, x, s(x), count, s(count)))
             self.ctx.log_source(loglevel)
+            self.driver.report().step(description='Locator Shoud Match X Times', message='Elements located only ' + str(count) + ' times',
+                                      passed=False, screenshot=True)
             raise AssertionError(message)
         self.info("Current page contains %s elements matching '%s'."
                   % (count, locator))
+        self.driver.report().step(description='Locator Shoud Match X Times', message='Element located ' + str(x) + ' times',
+                                  passed=True, screenshot=False)
 
     @keyword
     def page_should_not_contain(self, text, loglevel='TRACE'):
@@ -190,9 +231,13 @@ class ElementKeywords(LibraryComponent):
         """
         if self._page_contains(text):
             self.ctx.log_source(loglevel)
+            self.driver.report().step(description='Page Should Not Contain', message='Page contains text',
+                                      passed=False, screenshot=True)
             raise AssertionError("Page should not have contained text '%s'."
                                  % text)
         self.info("Current page does not contain text '%s'." % text)
+        self.driver.report().step(description='Page Should Not Contain', message='Page does not contain text', passed=True,
+                                  screenshot=False)
 
     @keyword
     def page_should_not_contain_element(self, locator, message=None, loglevel='TRACE'):
@@ -204,8 +249,15 @@ class ElementKeywords(LibraryComponent):
         See `Page Should Contain` for an explanation about ``message`` and
         ``loglevel`` arguments.
         """
-        self.assert_page_not_contains(locator, message=message,
-                                      loglevel=loglevel)
+        try:
+            self.assert_page_not_contains(locator, message=message,
+                                         loglevel=loglevel)
+            self.driver.report().step(description='Page Should Not Contain Element', message='Page does not contain element',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Not Contain Element', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def assign_id_to_element(self, locator, id):
@@ -222,9 +274,16 @@ class ElementKeywords(LibraryComponent):
         | `Assign ID to Element` | //ul[@class='example' and ./li[contains(., 'Stuff')]] | my id |
         | `Page Should Contain Element` | my id |
         """
-        self.info("Assigning temporary id '%s' to element '%s'." % (id, locator))
-        element = self.find_element(locator)
-        self.driver.execute_script("arguments[0].id = '%s';" % id, element)
+        try:
+            self.info("Assigning temporary id '%s' to element '%s'." % (id, locator))
+            element = self.find_element(locator)
+            self.driver.execute_script("arguments[0].id = '%s';" % id, element)
+            self.driver.report().step(description='Assign ID To Element', message='Assigned ID to element',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Assign ID To Element', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def element_should_be_disabled(self, locator):
@@ -237,7 +296,11 @@ class ElementKeywords(LibraryComponent):
         syntax.
         """
         if self.is_element_enabled(locator):
+            self.driver.report().step(description='Element Should Be Disabled', message='Element is enabled',
+                                      passed=False, screenshot=True)
             raise AssertionError("Element '%s' is enabled." % locator)
+        self.driver.report().step(description='Element Should Be Disabled', message='Element is disabled',
+                                  passed=True, screenshot=False)
 
     @keyword
     def element_should_be_enabled(self, locator):
@@ -250,7 +313,11 @@ class ElementKeywords(LibraryComponent):
         syntax.
         """
         if not self.is_element_enabled(locator):
+            self.driver.report().step(description='Element Should Be Enabled', message='Element is disabled',
+                                      passed=False, screenshot=True)
             raise AssertionError("Element '%s' is disabled." % locator)
+        self.driver.report().step(description='Element Should Be Enabled', message='Elemet is enabled',
+                                  passed=True, screenshot=False)
 
     @keyword
     def element_should_be_focused(self, locator):
@@ -261,13 +328,24 @@ class ElementKeywords(LibraryComponent):
 
         New in SeleniumLibrary 3.0.
         """
-        element = self.find_element(locator)
-        focused = self.driver.switch_to.active_element
-        # Selenium 3.6.0 with Firefox return dict wich contains the selenium WebElement
-        if isinstance(focused, dict):
-            focused = focused['value']
-        if element != focused:
-            raise AssertionError("Element '%s' does not have focus." % locator)
+        try:
+            element = self.find_element(locator)
+            focused = self.driver.switch_to.active_element
+            # Selenium 3.6.0 with Firefox return dict wich contains the selenium WebElement
+            if isinstance(focused, dict):
+                focused = focused['value']
+            if element != focused:
+                self.driver.report().step(description='Element Should Be Focused',
+                                          message='Element not focused',
+                                          passed=False, screenshot=True)
+                raise AssertionError("Element '%s' does not have focus." % locator)
+            self.driver.report().step(description='Element Should Be Focused',
+                                      message='Element focused',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Element Should Be Focused',
+                                      message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
 
     @keyword
     def element_should_be_visible(self, locator, message=None):
@@ -284,12 +362,24 @@ class ElementKeywords(LibraryComponent):
         The ``message`` argument can be used to override the default error
         message.
         """
-        if not self.find_element(locator).is_displayed():
-            if is_noney(message):
-                message = ("The element '%s' should be visible, but it "
-                           "is not." % locator)
-            raise AssertionError(message)
-        self.info("Element '%s' is displayed." % locator)
+        try:
+            if not self.find_element(locator).is_displayed():
+                if is_noney(message):
+                    message = ("The element '%s' should be visible, but it "
+                               "is not." % locator)
+                self.driver.report().step(description='Element Should Be Visible',
+                                            message='Element is not visible',
+                                            passed=False, screenshot=True)
+                raise AssertionError(message)
+            self.info("Element '%s' is displayed." % locator)
+            self.driver.report().step(description='Element Should Be Visible',
+                                      message='Element is visible',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Element Should Be Visible',
+                                      message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def element_should_not_be_visible(self, locator, message=None):
@@ -301,12 +391,21 @@ class ElementKeywords(LibraryComponent):
         element = self.find_element(locator, required=False)
         if element is None:
             self.info("Element '%s' did not exist." % locator)
+            self.driver.report().step(description='Element Should Not Be Visible',
+                                      message='Element does not exist',
+                                      passed=True, screenshot=False)
         elif not element.is_displayed():
             self.info("Element '%s' exists but is not displayed." % locator)
+            self.driver.report().step(description='Element Should Not Be Visible',
+                                      message='Element exists but is not displayed',
+                                      passed=True, screenshot=False)
         else:
             if is_noney(message):
                 message = ("The element '%s' should not be visible, "
                            "but it is." % locator)
+            self.driver.report().step(description='Element Should Not Be Visible',
+                                      message='Element is visible',
+                                      passed=False, screenshot=True)
             raise AssertionError(message)
 
     @keyword
@@ -328,7 +427,14 @@ class ElementKeywords(LibraryComponent):
         """
         self.info("Verifying element '%s' contains exact text '%s'."
                   % (locator, expected))
-        text = before_text = self.find_element(locator).text
+        text = ""
+        try :
+            text = before_text = self.find_element(locator).text
+        except Exception as e:
+            self.driver.report().step(description='Element Text Should Be',
+                                      message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
         if is_truthy(ignore_case):
             text = text.lower()
             expected = expected.lower()
@@ -337,7 +443,13 @@ class ElementKeywords(LibraryComponent):
                 message = ("The text of element '%s' should have been '%s' "
                            "but it was '%s'."
                            % (locator, expected, before_text))
+            self.driver.report().step(description='Element Text Should Be',
+                                      message='Element text not equal to expected',
+                                      passed=False, screenshot=True)
             raise AssertionError(message)
+        self.driver.report().step(description='Element Text Should Be',
+                                  message='Element text equal expected',
+                                  passed=True, screenshot=False)
 
     @keyword
     def element_text_should_not_be(self, locator, not_expected, message=None, ignore_case=False):
@@ -356,7 +468,13 @@ class ElementKeywords(LibraryComponent):
         """
         self.info("Verifying element '%s' does not contain exact text '%s'."
                   % (locator, not_expected))
-        text = self.find_element(locator).text
+        text = ""
+        try:
+            text = self.find_element(locator).text
+        except Exception as e:
+            self.driver.report().step(description='Element Text Should Not Be', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
         before_not_expected = not_expected
         if is_truthy(ignore_case):
             text = text.lower()
@@ -365,7 +483,11 @@ class ElementKeywords(LibraryComponent):
             if is_noney(message):
                 message = ("The text of element '%s' was not supposed to be '%s'."
                            % (locator, before_not_expected))
+            self.driver.report().step(description='Element Text Should Not Be', message='Element text equal to not expected',
+                                      passed=False, screenshot=True)
             raise AssertionError(message)
+        self.driver.report().step(description='Element Text Should Not Be', message='Element text different from not expected',
+                                  passed=True, screenshot=False)
 
     @keyword
     def get_element_attribute(self, locator, attribute):
@@ -381,7 +503,14 @@ class ElementKeywords(LibraryComponent):
         in SeleniumLibrary 3.2. The explicit ``attribute`` argument
         should be used instead.
         """
-        return self.find_element(locator).get_attribute(attribute)
+        try:
+            res = self.find_element(locator).get_attribute(attribute)
+            self.driver.report().step(description='Get Element Attribute', message='Attribute value: ' + str(res),
+                                      passed=False, screenshot=True)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Element Attribute', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
 
     @keyword
     def element_attribute_value_should_be(self, locator, attribute, expected, message=None):
@@ -395,13 +524,23 @@ class ElementKeywords(LibraryComponent):
 
         New in SeleniumLibrary 3.2.
         """
-        current_expected = self.find_element(locator).get_attribute(attribute)
+        current_expected = None
+        try:
+            current_expected = self.find_element(locator).get_attribute(attribute)
+        except Exception as e:
+            self.driver.report().step(description='Element Attribute Should Be', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
         if current_expected != expected:
             if is_noney(message):
                 message = ("Element '%s' attribute should have value '%s' but "
                            "its value was '%s'." % (locator, expected, current_expected))
+                self.driver.report().step(description='Element Attribute Should Be', message='Element attribute not equal to expected',
+                                          passed=False, screenshot=True)
             raise AssertionError(message)
         self.info("Element '%s' attribute '%s' contains value '%s'." % (locator, attribute, expected))
+        self.driver.report().step(description='Element Attribute Should Be', message='Element attribute equal to expected',
+                                  passed=True, screenshot=False)
 
     @keyword
     def get_horizontal_position(self, locator):
@@ -415,7 +554,15 @@ class ElementKeywords(LibraryComponent):
 
         See also `Get Vertical Position`.
         """
-        return self.find_element(locator).location['x']
+        try:
+            res = self.find_element(locator).location['x']
+            self.driver.report().step(description='Get Horizontal Position', message='Horizontal position: ' + str(res),
+                                      passed=True, screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Horizontal Position', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def get_element_size(self, locator):
@@ -429,8 +576,16 @@ class ElementKeywords(LibraryComponent):
         Example:
         | ${width} | ${height} = | `Get Element Size` | css:div#container |
         """
-        element = self.find_element(locator)
-        return element.size['width'], element.size['height']
+        try:
+            element = self.find_element(locator)
+            res = element.size['width'], element.size['height']
+            self.driver.report().step(description='Get Eleemnt Size', message='Element size: ' + str(res),
+                                      passed=True, screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Element Size', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def cover_element(self, locator):
@@ -444,26 +599,33 @@ class ElementKeywords(LibraryComponent):
         Example:
         |`Cover Element` | css:div#container |
         """
-        elements = self.find_elements(locator)
-        if not elements:
-            raise ElementNotFound("No element with locator '%s' found."
-                                  % locator)
-        for element in elements:
-            script = """
-old_element = arguments[0];
-let newDiv = document.createElement('div');
-newDiv.setAttribute("name", "covered");
-newDiv.style.backgroundColor = 'blue';
-newDiv.style.zIndex = '999';
-newDiv.style.top = old_element.offsetTop + 'px';
-newDiv.style.left = old_element.offsetLeft + 'px';
-newDiv.style.height = old_element.offsetHeight + 'px';
-newDiv.style.width = old_element.offsetWidth + 'px';
-old_element.parentNode.insertBefore(newDiv, old_element);
-old_element.remove();
-newDiv.parentNode.style.overflow = 'hidden';
-        """
-            self.driver.execute_script(script, element)
+        try:
+            elements = self.find_elements(locator)
+            if not elements:
+                raise ElementNotFound("No element with locator '%s' found."
+                                      % locator)
+            for element in elements:
+                script = """
+    old_element = arguments[0];
+    let newDiv = document.createElement('div');
+    newDiv.setAttribute("name", "covered");
+    newDiv.style.backgroundColor = 'blue';
+    newDiv.style.zIndex = '999';
+    newDiv.style.top = old_element.offsetTop + 'px';
+    newDiv.style.left = old_element.offsetLeft + 'px';
+    newDiv.style.height = old_element.offsetHeight + 'px';
+    newDiv.style.width = old_element.offsetWidth + 'px';
+    old_element.parentNode.insertBefore(newDiv, old_element);
+    old_element.remove();
+    newDiv.parentNode.style.overflow = 'hidden';
+            """
+                self.driver.execute_script(script, element)
+                self.driver.report().step(description='Cover Element', message='Covered element',
+                                          passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Cover Element', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def get_value(self, locator):
@@ -472,7 +634,16 @@ newDiv.parentNode.style.overflow = 'hidden';
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        return self.get_element_attribute(locator, 'value')
+        try:
+            res = self.get_element_attribute(locator, 'value')
+            self.driver.report().step(description='Get Value', message='Value: ' + str(res),
+                                      passed=True, screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Value', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def get_text(self, locator):
@@ -481,7 +652,15 @@ newDiv.parentNode.style.overflow = 'hidden';
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        return self.find_element(locator).text
+        try:
+            res = self.find_element(locator).text
+            self.driver.report().step(description='Get Text', message='Text: ' + str(res),
+                                      passed=True, screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Text', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def clear_element_text(self, locator):
@@ -490,7 +669,14 @@ newDiv.parentNode.style.overflow = 'hidden';
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.find_element(locator).clear()
+        try:
+            self.find_element(locator).clear()
+            self.driver.report().step(description='Clear Element Text', message='Cleared element text',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Clear Element Text', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def get_vertical_position(self, locator):
@@ -504,7 +690,16 @@ newDiv.parentNode.style.overflow = 'hidden';
 
         See also `Get Horizontal Position`.
         """
-        return self.find_element(locator).location['y']
+        try:
+            res = self.find_element(locator).location['y']
+            self.driver.report().step(description='Get Vertical Position', message='Vertical position: ' + str(res),
+                                      passed=True, screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Vertical Position', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def click_button(self, locator, modifier=False):
@@ -519,14 +714,21 @@ newDiv.parentNode.style.overflow = 'hidden';
 
         The ``modifier`` argument is new in SeleniumLibrary 3.3
         """
-        if is_falsy(modifier):
-            self.info("Clicking button '%s'." % locator)
-            element = self.find_element(locator, tag='input', required=False)
-            if not element:
-                element = self.find_element(locator, tag='button')
-            element.click()
-        else:
-            self._click_with_modifier(locator, ['button', 'input'], modifier)
+        try:
+            if is_falsy(modifier):
+                self.info("Clicking button '%s'." % locator)
+                element = self.find_element(locator, tag='input', required=False)
+                if not element:
+                    element = self.find_element(locator, tag='button')
+                element.click()
+            else:
+                self._click_with_modifier(locator, ['button', 'input'], modifier)
+            self.driver.report().step(description='Click Button', message='Clicked button',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Click Button', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def click_image(self, locator, modifier=False):
@@ -541,15 +743,22 @@ newDiv.parentNode.style.overflow = 'hidden';
 
         The ``modifier`` argument is new in SeleniumLibrary 3.3
         """
-        if is_falsy(modifier):
-            self.info("Clicking image '%s'." % locator)
-            element = self.find_element(locator, tag='image', required=False)
-            if not element:
-                # A form may have an image as it's submit trigger.
-                element = self.find_element(locator, tag='input')
-            element.click()
-        else:
-            self._click_with_modifier(locator, ['image', 'input'], modifier)
+        try:
+            if is_falsy(modifier):
+                self.info("Clicking image '%s'." % locator)
+                element = self.find_element(locator, tag='image', required=False)
+                if not element:
+                    # A form may have an image as it's submit trigger.
+                    element = self.find_element(locator, tag='input')
+                element.click()
+            else:
+                self._click_with_modifier(locator, ['image', 'input'], modifier)
+            self.driver.report().step(description='Click Image', message='Clicked image',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Click Image', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def click_link(self, locator, modifier=False):
@@ -564,11 +773,18 @@ newDiv.parentNode.style.overflow = 'hidden';
 
         The ``modifier`` argument is new in SeleniumLibrary 3.3
         """
-        if is_falsy(modifier):
-            self.info("Clicking link '%s'." % locator)
-            self.find_element(locator, tag='link').click()
-        else:
-            self._click_with_modifier(locator, ['link', 'link'], modifier)
+        try:
+            if is_falsy(modifier):
+                self.info("Clicking link '%s'." % locator)
+                self.find_element(locator, tag='link').click()
+            else:
+                self._click_with_modifier(locator, ['link', 'link'], modifier)
+            self.driver.report().step(description='Click Link', message='Clicked link',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Click Link', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def click_element(self, locator, modifier=False, action_chain=False):
@@ -601,13 +817,21 @@ newDiv.parentNode.style.overflow = 'hidden';
         The ``modifier`` argument is new in SeleniumLibrary 3.2
         The ``action_chain`` argument is new in SeleniumLibrary 4.1
         """
-        if is_truthy(modifier):
-            self._click_with_modifier(locator, [None, None], modifier)
-        elif is_truthy(action_chain):
-            self._click_with_action_chain(locator)
-        else:
-            self.info("Clicking element '%s'." % locator)
-            self.find_element(locator).click()
+        try:
+            if is_truthy(modifier):
+                self._click_with_modifier(locator, [None, None], modifier)
+            elif is_truthy(action_chain):
+                self._click_with_action_chain(locator)
+            else:
+                self.info("Clicking element '%s'." % locator)
+                self.find_element(locator).click()
+            self.driver.report().step(description='Click Element', message='Clicked on element',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Click Element', message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
+
 
     def _click_with_action_chain(self, locator):
         self.info("Clicking '%s' using an action chain." % locator)
@@ -641,20 +865,25 @@ newDiv.parentNode.style.overflow = 'hidden';
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.info("Clicking element '%s' at coordinates x=%s, y=%s."
-                  % (locator, xoffset, yoffset))
-        element = self.find_element(locator)
-        action = ActionChains(self.driver)
-        # Try/except can be removed when minimum required Selenium is 4.0 or greater.
         try:
-            action.move_to_element(element)
-        except AttributeError:
-            self.debug('Workaround for Selenium 3 bug.')
-            element = element.wrapped_element
-            action.move_to_element(element)
-        action.move_by_offset(xoffset, yoffset)
-        action.click()
-        action.perform()
+            self.info("Clicking element '%s' at coordinates x=%s, y=%s."
+                      % (locator, xoffset, yoffset))
+            element = self.find_element(locator)
+            action = ActionChains(self.driver)
+            # Try/except can be removed when minimum required Selenium is 4.0 or greater.
+            try:
+                action.move_to_element(element)
+            except AttributeError:
+                self.debug('Workaround for Selenium 3 bug.')
+                element = element.wrapped_element
+                action.move_to_element(element)
+            action.move_by_offset(xoffset, yoffset)
+            action.click()
+            action.perform()
+            self.driver.report().step(description='Click Element At Coordinates', message='Clicked element at coordinates', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Click Element At Coordinates', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def double_click_element(self, locator):
@@ -663,10 +892,16 @@ newDiv.parentNode.style.overflow = 'hidden';
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.info("Double clicking element '%s'." % locator)
-        element = self.find_element(locator)
-        action = ActionChains(self.driver)
-        action.double_click(element).perform()
+        try:
+            self.info("Double clicking element '%s'." % locator)
+            element = self.find_element(locator)
+            action = ActionChains(self.driver)
+            action.double_click(element).perform()
+            self.driver.report().step(description='Double Click Element', message='Double clicked element', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Double Click Element', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def set_focus_to_element(self, locator):
@@ -677,8 +912,13 @@ newDiv.parentNode.style.overflow = 'hidden';
 
         Prior to SeleniumLibrary 3.0 this keyword was named `Focus`.
         """
-        element = self.find_element(locator)
-        self.driver.execute_script("arguments[0].focus();", element)
+        try:
+            element = self.find_element(locator)
+            self.driver.execute_script("arguments[0].focus();", element)
+            self.driver.report().step(description='Set Focus To Element', message='Set focus to element', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Set Focus To Element', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def scroll_element_into_view(self, locator):
@@ -689,14 +929,24 @@ newDiv.parentNode.style.overflow = 'hidden';
 
         New in SeleniumLibrary 3.2.0
         """
-        element = self.find_element(locator)
+        try:
+            element = self.find_element(locator)
+        except Exception as e:
+            self.driver.report().step(description='Scroll Element Into View', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
         # Try/except can be removed when minimum required Selenium is 4.0 or greater.
         try:
             ActionChains(self.driver).move_to_element(element).perform()
+            self.driver.report().step(description='Scroll Element Into View', message='Scrolled element into view', passed=True, screenshot=False)
         except AttributeError:
             self.debug('Workaround for Selenium 3 bug.')
             element = element.wrapped_element
             ActionChains(self.driver).move_to_element(element).perform()
+            self.driver.report().step(description='Scroll Element Into View', message='Scrolled element into view', passed=True, screenshot=False)
+            return
+        self.driver.report().step(description='Scroll Element Into View', message='Could not scroll element into view', passed=False, screenshot=True)
+        raise AssertionError
+
 
     @keyword
     def drag_and_drop(self, locator, target):
@@ -709,10 +959,15 @@ newDiv.parentNode.style.overflow = 'hidden';
         Example:
         | `Drag And Drop` | css:div#element | css:div.target |
         """
-        element = self.find_element(locator)
-        target = self.find_element(target)
-        action = ActionChains(self.driver)
-        action.drag_and_drop(element, target).perform()
+        try:
+            element = self.find_element(locator)
+            target = self.find_element(target)
+            action = ActionChains(self.driver)
+            action.drag_and_drop(element, target).perform()
+            self.driver.report().step(description='Drag And Drop', message='Dragged element to target element', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Drag And Drop', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def drag_and_drop_by_offset(self, locator, xoffset, yoffset):
@@ -727,10 +982,15 @@ newDiv.parentNode.style.overflow = 'hidden';
         Example:
         | `Drag And Drop By Offset` | myElem | 50 | -35 | # Move myElem 50px right and 35px down |
         """
-        element = self.find_element(locator)
-        action = ActionChains(self.driver)
-        action.drag_and_drop_by_offset(element, int(xoffset), int(yoffset))
-        action.perform()
+        try:
+            element = self.find_element(locator)
+            action = ActionChains(self.driver)
+            action.drag_and_drop_by_offset(element, int(xoffset), int(yoffset))
+            action.perform()
+            self.driver.report().step(description='Drag And Drop By Offset', message='Dragged and dropped element by offset', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Drag And Drop By Offset', message='Error: ' + str(e), passed=False, screenshot=False)
+            raise AssertionError
 
     @keyword
     def mouse_down(self, locator):
@@ -744,10 +1004,15 @@ newDiv.parentNode.style.overflow = 'hidden';
         See also the more specific keywords `Mouse Down On Image` and
         `Mouse Down On Link`.
         """
-        self.info("Simulating Mouse Down on element '%s'." % locator)
-        element = self.find_element(locator)
-        action = ActionChains(self.driver)
-        action.click_and_hold(element).perform()
+        try:
+            self.info("Simulating Mouse Down on element '%s'." % locator)
+            element = self.find_element(locator)
+            action = ActionChains(self.driver)
+            action.click_and_hold(element).perform()
+            self.driver.report().step(description='Mouse Down', message='Moused down on element', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Mouse Down', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def mouse_out(self, locator):
@@ -756,21 +1021,26 @@ newDiv.parentNode.style.overflow = 'hidden';
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.info("Simulating Mouse Out on element '%s'." % locator)
-        element = self.find_element(locator)
-        size = element.size
-        offsetx = (size['width'] / 2) + 1
-        offsety = (size['height'] / 2) + 1
-        action = ActionChains(self.driver)
-        # Try/except can be removed when minimum required Selenium is 4.0 or greater.
         try:
-            action.move_to_element(element)
-        except AttributeError:
-            self.debug('Workaround for Selenium 3 bug.')
-            element = element.wrapped_element
-            action.move_to_element(element)
-        action.move_by_offset(offsetx, offsety)
-        action.perform()
+            self.info("Simulating Mouse Out on element '%s'." % locator)
+            element = self.find_element(locator)
+            size = element.size
+            offsetx = (size['width'] / 2) + 1
+            offsety = (size['height'] / 2) + 1
+            action = ActionChains(self.driver)
+            # Try/except can be removed when minimum required Selenium is 4.0 or greater.
+            try:
+                action.move_to_element(element)
+            except AttributeError:
+                self.debug('Workaround for Selenium 3 bug.')
+                element = element.wrapped_element
+                action.move_to_element(element)
+            action.move_by_offset(offsetx, offsety)
+            action.perform()
+            self.driver.report().step(description='Mouse Out', message='Moused out of element', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Mouse Out', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def mouse_over(self, locator):
@@ -779,16 +1049,25 @@ newDiv.parentNode.style.overflow = 'hidden';
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.info("Simulating Mouse Over on element '%s'." % locator)
-        element = self.find_element(locator)
-        action = ActionChains(self.driver)
+        try:
+            self.info("Simulating Mouse Over on element '%s'." % locator)
+            element = self.find_element(locator)
+            action = ActionChains(self.driver)
+        except Exception as e:
+            self.driver.report().step(description='Mouse Over', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
         # Try/except can be removed when minimum required Selenium is 4.0 or greater.
         try:
             action.move_to_element(element).perform()
+            self.driver.report().step(description='Mouse Over', message='Moused over element: ' + str(locator), passed=True, screenshot=False)
         except AttributeError:
-            self.debug('Workaround for Selenium 3 bug.')
-            element = element.wrapped_element
-            action.move_to_element(element).perform()
+            try:
+                self.debug('Workaround for Selenium 3 bug.')
+                element = element.wrapped_element
+                action.move_to_element(element).perform()
+                self.driver.report().step(description='Mouse Over', message='Moused over element: ' + str(locator), passed=True, screenshot=False)
+            except Exception as e:
+                self.driver.report().step(description='Mouse Over', message='Error: ' + str(e), passed=False, screenshot=True)
 
     @keyword
     def mouse_up(self, locator):
@@ -797,16 +1076,26 @@ newDiv.parentNode.style.overflow = 'hidden';
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.info("Simulating Mouse Up on element '%s'." % locator)
-        element = self.find_element(locator)
-        ActionChains(self.driver).release(element).perform()
+        try:
+            self.info("Simulating Mouse Up on element '%s'." % locator)
+            element = self.find_element(locator)
+            ActionChains(self.driver).release(element).perform()
+            self.driver.report().step(description='Mouse Up', message='Moused up on element located at: ' + str(locator), passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Mouse Up', message='Error: ' + str(locator), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def open_context_menu(self, locator):
         """Opens the context menu on the element identified by ``locator``."""
-        element = self.find_element(locator)
-        action = ActionChains(self.driver)
-        action.context_click(element).perform()
+        try:
+            element = self.find_element(locator)
+            action = ActionChains(self.driver)
+            action.context_click(element).perform()
+            self.driver.report().step(description='Open Context Menu', message='Opened context menu at locator: ' + str(locator), passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Open Context Menu', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def simulate_event(self, locator, event):
@@ -820,26 +1109,36 @@ newDiv.parentNode.style.overflow = 'hidden';
 
         Prior to SeleniumLibrary 3.0 this keyword was named `Simulate`.
         """
-        element = self.find_element(locator)
-        script = """
-element = arguments[0];
-eventName = arguments[1];
-if (document.createEventObject) { // IE
-    return element.fireEvent('on' + eventName, document.createEventObject());
-}
-var evt = document.createEvent("HTMLEvents");
-evt.initEvent(eventName, true, true);
-return !element.dispatchEvent(evt);
-        """
-        self.driver.execute_script(script, element, event)
+        try:
+            element = self.find_element(locator)
+            script = """
+    element = arguments[0];
+    eventName = arguments[1];
+    if (document.createEventObject) { // IE
+        return element.fireEvent('on' + eventName, document.createEventObject());
+    }
+    var evt = document.createEvent("HTMLEvents");
+    evt.initEvent(eventName, true, true);
+    return !element.dispatchEvent(evt);
+            """
+            self.driver.execute_script(script, element, event)
+            self.driver.report().step(description='Simulate Event', message='Simulated event', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Simulate Event', message='Could not simulate event. Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def press_key(self, locator, key):
         """*DEPRECATED in SeleniumLibrary 4.0.* use `Press Keys` instead."""
-        if key.startswith('\\') and len(key) > 1:
-            key = self._map_ascii_key_code_to_key(int(key[1:]))
-        element = self.find_element(locator)
-        element.send_keys(key)
+        try:
+            if key.startswith('\\') and len(key) > 1:
+                key = self._map_ascii_key_code_to_key(int(key[1:]))
+            element = self.find_element(locator)
+            element.send_keys(key)
+            self.driver.report().step(description='Press Key', message='Pressed key', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Press Key', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def press_keys(self, locator=None, *keys):
@@ -889,23 +1188,28 @@ return !element.dispatchEvent(evt);
         | `Press Keys` | text_field | CTRL+c         |            | # Pressing CTRL key down, sends string "c" and then releases CTRL key.            |
         | `Press Keys` | button     | RETURN         |            | # Pressing "ENTER" key to element.                                                |
         """
-        parsed_keys = self._parse_keys(*keys)
-        if is_truthy(locator):
-            self.info('Sending key(s) %s to %s element.' % (keys, locator))
-            element = self.find_element(locator)
-            ActionChains(self.driver).click(element).perform()
-        else:
-            self.info('Sending key(s) %s to page.' % str(keys))
-            element = None
-        for parsed_key in parsed_keys:
-            actions = ActionChains(self.driver)
-            for key in parsed_key:
-                if key.special:
-                    self._press_keys_special_keys(actions, element, parsed_key, key)
-                else:
-                    self._press_keys_normal_keys(actions, key)
-            self._special_key_up(actions, parsed_key)
-            actions.perform()
+        try:
+            parsed_keys = self._parse_keys(*keys)
+            if is_truthy(locator):
+                self.info('Sending key(s) %s to %s element.' % (keys, locator))
+                element = self.find_element(locator)
+                ActionChains(self.driver).click(element).perform()
+            else:
+                self.info('Sending key(s) %s to page.' % str(keys))
+                element = None
+            for parsed_key in parsed_keys:
+                actions = ActionChains(self.driver)
+                for key in parsed_key:
+                    if key.special:
+                        self._press_keys_special_keys(actions, element, parsed_key, key)
+                    else:
+                        self._press_keys_normal_keys(actions, key)
+                self._special_key_up(actions, parsed_key)
+                actions.perform()
+            self.driver.report().step(description='Press Keys', message='Pressed keys', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Press Keys', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     def _press_keys_normal_keys(self, actions, key):
         self.info('Sending key%s %s' % (plural_or_not(key.converted), key.converted))
@@ -934,8 +1238,14 @@ return !element.dispatchEvent(evt);
 
         If a link has no id, an empty string will be in the list instead.
         """
-        links = self.find_elements("tag=a")
-        return [link.get_attribute('id') for link in links]
+        try:
+            links = self.find_elements("tag=a")
+            res = [link.get_attribute('id') for link in links]
+            self.driver.report().step(description='Get All Links', message='Got all links', passed=True, screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get All Links', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def mouse_down_on_link(self, locator):
@@ -945,9 +1255,14 @@ return !element.dispatchEvent(evt);
         syntax. When using the default locator strategy, links are searched
         using ``id``, ``name``, ``href`` and the link text.
         """
-        element = self.find_element(locator, tag='link')
-        action = ActionChains(self.driver)
-        action.click_and_hold(element).perform()
+        try:
+            element = self.find_element(locator, tag='link')
+            action = ActionChains(self.driver)
+            action.click_and_hold(element).perform()
+            self.driver.report().step(description='Mouse Down On Link', message='Moused down on link', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Mouse Down On Link', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def page_should_contain_link(self, locator, message=None, loglevel='TRACE'):
@@ -960,7 +1275,13 @@ return !element.dispatchEvent(evt);
         See `Page Should Contain Element` for an explanation about ``message``
         and ``loglevel`` arguments.
         """
-        self.assert_page_contains(locator, 'link', message, loglevel)
+        try:
+            self.assert_page_contains(locator, 'link', message, loglevel)
+            self.driver.report().step(description='Page Should Contain Link', message='Page contains link', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Contain Link', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def page_should_not_contain_link(self, locator, message=None, loglevel='TRACE'):
@@ -973,7 +1294,14 @@ return !element.dispatchEvent(evt);
         See `Page Should Contain Element` for an explanation about ``message``
         and ``loglevel`` arguments.
         """
-        self.assert_page_not_contains(locator, 'link', message, loglevel)
+        try:
+            self.assert_page_not_contains(locator, 'link', message, loglevel)
+            self.driver.report().step(description='Page Should Not Contain Link', message='Page does not contain link', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Not Contain Link', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
+
+
 
     @keyword
     def mouse_down_on_image(self, locator):
@@ -983,9 +1311,14 @@ return !element.dispatchEvent(evt);
         syntax. When using the default locator strategy, images are searched
         using ``id``, ``name``, ``src`` and ``alt``.
         """
-        element = self.find_element(locator, tag='image')
-        action = ActionChains(self.driver)
-        action.click_and_hold(element).perform()
+        try:
+            element = self.find_element(locator, tag='image')
+            action = ActionChains(self.driver)
+            action.click_and_hold(element).perform()
+            self.driver.report().step(description='Mouse Down On Image', message='Simulated mouse down event on image', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Mouse Down On Image', message='Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def page_should_contain_image(self, locator, message=None, loglevel='TRACE'):
@@ -998,7 +1331,13 @@ return !element.dispatchEvent(evt);
         See `Page Should Contain Element` for an explanation about ``message``
         and ``loglevel`` arguments.
         """
-        self.assert_page_contains(locator, 'image', message, loglevel)
+        try:
+            self.assert_page_contains(locator, 'image', message, loglevel)
+            self.driver.report().step(description='Page Should Contain Image', message='Page contains image', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Contain Image', message='Page does not contain image. Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def page_should_not_contain_image(self, locator, message=None, loglevel='TRACE'):
@@ -1011,7 +1350,13 @@ return !element.dispatchEvent(evt);
         See `Page Should Contain Element` for an explanation about ``message``
         and ``loglevel`` arguments.
         """
-        self.assert_page_not_contains(locator, 'image', message, loglevel)
+        try:
+            self.assert_page_not_contains(locator, 'image', message, loglevel)
+            self.driver.report().step(description='Page Should Not Contain Image', message='Page does not contain image', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Not Contain Image', message='Page contains image. Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def get_element_count(self, locator):
@@ -1027,7 +1372,14 @@ return !element.dispatchEvent(evt);
 
         New in SeleniumLibrary 3.0.
         """
-        return len(self.find_elements(locator))
+        try:
+            res = len(self.find_elements(locator))
+            self.driver.report().step(description='Get Element Count', message='Amount of matching elements: ' + str(res), passed=True, screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Element Count', message='Could not get element count. Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def add_location_strategy(self, strategy_name, strategy_keyword, persist=False):
@@ -1042,7 +1394,16 @@ return !element.dispatchEvent(evt);
         `Boolean arguments`) will cause the location strategy to stay
         registered throughout the life of the test.
         """
-        self.element_finder.register(strategy_name, strategy_keyword, persist)
+        try:
+            self.element_finder.register(strategy_name, strategy_keyword, persist)
+            self.driver.report().step(description='Add location Strategy',
+                                      message='Added location strategy ' + strategy_name, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Add Location Strategy',
+                                      message='Could not add location strategy. Error: ' + str(e), passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def remove_location_strategy(self, strategy_name):
@@ -1051,7 +1412,16 @@ return !element.dispatchEvent(evt);
         See `Custom locators` for information on how to create and use
         custom strategies.
         """
-        self.element_finder.unregister(strategy_name)
+        try:
+            self.element_finder.unregister(strategy_name)
+            self.driver.report().step(description='Remove Location Strategy',
+                                      message='Removed location strategy ' + strategy_name, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Remove Location Strategy',
+                                      message='Could not remove custom location strategy ' + strategy_name + ' Error: ' + str(e), passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     def _map_ascii_key_code_to_key(self, key_code):
         map = {
