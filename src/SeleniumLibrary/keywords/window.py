@@ -32,7 +32,19 @@ class WindowKeywords(LibraryComponent):
     @keyword
     def select_window(self, locator='MAIN', timeout=None):
         """DEPRECATED in SeleniumLibrary 4.0. , use `Switch Window` instead."""
-        return self.switch_window(locator, timeout)
+        try:
+            res = self.switch_window(locator, timeout)
+            self.driver.report().step(description='Select Window',
+                                      message='Selected window',
+                                      passed=True,
+                                      screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Select Window',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def switch_window(self, locator='MAIN', timeout=None, browser='CURRENT'):
@@ -120,11 +132,26 @@ class WindowKeywords(LibraryComponent):
             if not is_string(browser) or not browser.upper() == 'CURRENT':
                 self.drivers.switch(browser)
             self._window_manager.select(locator, timeout)
+            self.driver.report().step(description='Switch Window',
+                                      message='Switched window',
+                                      passed=True,
+                                      screenshot=False)
 
     @keyword
     def close_window(self):
         """Closes currently opened and selected browser window/tab. """
-        self.driver.close()
+        try:
+            self.driver.close()
+            self.driver.report().step(description='Close Window',
+                                      message='Closed window',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Close Window',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def get_window_handles(self, browser='CURRENT'):
@@ -136,31 +163,81 @@ class WindowKeywords(LibraryComponent):
 
         Prior to SeleniumLibrary 3.0, this keyword was named `List Windows`.
         """
-        return self._window_manager.get_window_handles(browser)
+        try:
+            res = self._window_manager.get_window_handles(browser)
+            self.driver.report().step(description='Get Window Handles',
+                                      message='Got window handles',
+                                      passed=True,
+                                      screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Window Handles',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def get_window_identifiers(self, browser='CURRENT'):
         """Returns and logs id attributes of all windows of the selected browser.
 
         How to select the ``browser`` scope of this keyword, see `Get Locations`."""
-        ids = [info.id for info in self._window_manager.get_window_infos(browser)]
-        return self._log_list(ids)
+        try:
+            ids = [info.id for info in self._window_manager.get_window_infos(browser)]
+            res = self._log_list(ids)
+            self.driver.report().step(description='Get Window Identifiers',
+                                      message='Got window identifiers',
+                                      passed=True,
+                                      screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Window Identifiers',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def get_window_names(self, browser='CURRENT'):
         """Returns and logs names of all windows of the selected browser.
 
         How to select the ``browser`` scope of this keyword, see `Get Locations`."""
-        names = [info.name for info in self._window_manager.get_window_infos(browser)]
-        return self._log_list(names)
+        try:
+            names = [info.name for info in self._window_manager.get_window_infos(browser)]
+            res =  self._log_list(names)
+            self.driver.report().step(description='Get Window Names',
+                                      message='Got window names',
+                                      passed=True,
+                                      screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Window Names',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def get_window_titles(self, browser='CURRENT'):
         """Returns and logs titles of all windows of the selected browser.
 
         How to select the ``browser`` scope of this keyword, see `Get Locations`."""
-        titles = [info.title for info in self._window_manager.get_window_infos(browser)]
-        return self._log_list(titles)
+        try:
+            titles = [info.title for info in self._window_manager.get_window_infos(browser)]
+            res = self._log_list(titles)
+            self.driver.report().step(description='Get Window Titles',
+                                      message='Got window titles',
+                                      passed=True,
+                                      screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Window Titles',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def get_locations(self, browser='CURRENT'):
@@ -178,13 +255,36 @@ class WindowKeywords(LibraryComponent):
 
         - If ``browser`` is ``ALL`` (case-insensitive)
           the window information of all windows of all opened browsers are returned."""
-        urls = [info.url for info in self._window_manager.get_window_infos(browser)]
-        return self._log_list(urls)
+        try:
+            urls = [info.url for info in self._window_manager.get_window_infos(browser)]
+            res = self._log_list(urls)
+            self.driver.report().step(description='Get Locations',
+                                      message='Got locations',
+                                      passed=True,
+                                      screenshot=False)
+            return res
+        except Exception as e:
+            self.driver.report().step(description='Get Locations',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def maximize_browser_window(self):
         """Maximizes current browser window."""
-        self.driver.maximize_window()
+        try:
+            self.driver.maximize_window()
+            self.driver.report().step(description='Maximize Browser Window',
+                                      message='Maximized browser window',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Maximize Browser Window',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def get_window_size(self, inner=False):
@@ -202,11 +302,33 @@ class WindowKeywords(LibraryComponent):
         | ${width} | ${height}= | `Get Window Size` | True |
         """
         if is_truthy(inner):
-            inner_width = int(self.driver.execute_script("return window.innerWidth;"))
-            inner_height = int(self.driver.execute_script("return window.innerHeight;"))
-            return inner_width, inner_height
-        size = self.driver.get_window_size()
-        return size['width'], size['height']
+            try:
+                inner_width = int(self.driver.execute_script("return window.innerWidth;"))
+                inner_height = int(self.driver.execute_script("return window.innerHeight;"))
+                self.driver.report().step(description='Get Window Size',
+                                          message='Window Size, Height: ' + inner_height + ' Width: ' + inner_width,
+                                          passed=True,
+                                          screenshot=False)
+                return inner_width, inner_height
+            except Exception as e:
+                self.driver.report().step(description='Get Window Size',
+                                          message='Error: ' + str(e),
+                                          passed=False,
+                                          screenshot=True)
+                raise AssertionError
+        try:
+            size = self.driver.get_window_size()
+            self.driver.report().step(description='Get Window Size',
+                                      message='Window Size, Height: ' + size['height'] + ' Width: ' + size['width'],
+                                      passed=True,
+                                      screenshot=False)
+            return size['width'], size['height']
+        except Exception as e:
+            self.driver.report().step(description='Get Window Size',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def set_window_size(self, width, height, inner=False):
@@ -233,23 +355,44 @@ class WindowKeywords(LibraryComponent):
         | `Set Window Size` | 800 | 600 |      |
         | `Set Window Size` | 800 | 600 | True |
         """
-        width, height = int(width), int(height)
-        if is_falsy(inner):
-            return self.driver.set_window_size(width, height)
-        self.driver.set_window_size(width, height)
-        inner_width = int(self.driver.execute_script("return window.innerWidth;"))
-        inner_height = int(self.driver.execute_script("return window.innerHeight;"))
-        self.info('window.innerWidth is %s and window.innerHeight is %s' % (inner_width, inner_height))
-        width_offset = width - inner_width
-        height_offset = height - inner_height
-        window_width = width + width_offset
-        window_height = height + height_offset
-        self.info('Setting window size to %s %s' % (window_width, window_height))
-        self.driver.set_window_size(window_width, window_height)
-        result_width = int(self.driver.execute_script("return window.innerWidth;"))
-        result_height = int(self.driver.execute_script("return window.innerHeight;"))
-        if result_width != width or result_height != height:
-            raise AssertionError("Keyword failed setting correct window size.")
+        try:
+            width, height = int(width), int(height)
+            if is_falsy(inner):
+                res = self.driver.set_window_size(width, height)
+                self.driver.report().step(description='Set Window Size',
+                                          message='Set the window size',
+                                          passed=True,
+                                          screenshot=False)
+                return res
+            self.driver.set_window_size(width, height)
+            inner_width = int(self.driver.execute_script("return window.innerWidth;"))
+            inner_height = int(self.driver.execute_script("return window.innerHeight;"))
+            self.info('window.innerWidth is %s and window.innerHeight is %s' % (inner_width, inner_height))
+            width_offset = width - inner_width
+            height_offset = height - inner_height
+            window_width = width + width_offset
+            window_height = height + height_offset
+            self.info('Setting window size to %s %s' % (window_width, window_height))
+            self.driver.set_window_size(window_width, window_height)
+            result_width = int(self.driver.execute_script("return window.innerWidth;"))
+            result_height = int(self.driver.execute_script("return window.innerHeight;"))
+            if result_width != width or result_height != height:
+                self.driver.report().step(description='Set Window Size',
+                                          message='Keywprd failed setting correct window size',
+                                          passed=False,
+                                          screenshot=True)
+                raise AssertionError("Keyword failed setting correct window size.")
+            self.driver.report().step(description='Set Window Size',
+                                      message='Set the window size',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Set Window Size',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def get_window_position(self):
@@ -261,8 +404,21 @@ class WindowKeywords(LibraryComponent):
         Example:
         | ${x} | ${y}= | `Get Window Position` |
         """
-        position = self.driver.get_window_position()
-        return position['x'], position['y']
+        try:
+            position = self.driver.get_window_position()
+            x = str(position['x'])
+            y = str(position['y'])
+            self.driver.report().step(description='Get Window Position',
+                                      message='Window position is X: ' + x + ' Y: ' + y,
+                                      passed=True,
+                                      screenshot=False)
+            return position['x'], position['y']
+        except Exception as e:
+            self.driver.report().step(description='Get Window Position',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def set_window_position(self, x, y):
@@ -279,7 +435,18 @@ class WindowKeywords(LibraryComponent):
         Example:
         | `Set Window Position` | 100 | 200 |
         """
-        self.driver.set_window_position(int(x), int(y))
+        try:
+            self.driver.set_window_position(int(x), int(y))
+            self.driver.report().step(description='Set Window Position',
+                                      message='Set the position of the window',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Set Window Position',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     def _log_list(self, items, what='item'):
         msg = [
