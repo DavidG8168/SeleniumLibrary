@@ -29,7 +29,16 @@ class CookieKeywords(LibraryComponent):
     @keyword
     def delete_all_cookies(self):
         """Deletes all cookies."""
-        self.driver.delete_all_cookies()
+        try:
+            self.driver.delete_all_cookies()
+            self.driver.report().step(description='Delete All Cookies',
+                                      message='Deleted all cookies',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Delete All Cookies',
+                                      message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def delete_cookie(self, name):
@@ -37,7 +46,16 @@ class CookieKeywords(LibraryComponent):
 
         If the cookie is not found, nothing happens.
         """
-        self.driver.delete_cookie(name)
+        try:
+            self.driver.delete_cookie(name)
+            self.driver.report().step(description='Delete Cookie',
+                                      message='Deleted cookie',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Delete Cookie',
+                                      message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def get_cookies(self, as_dict=False):
@@ -55,16 +73,28 @@ class CookieKeywords(LibraryComponent):
 
         The `` as_dict`` argument is new in SeleniumLibrary 3.3
         """
-        if is_falsy(as_dict):
-            pairs = []
-            for cookie in self.driver.get_cookies():
-                pairs.append(cookie['name'] + "=" + cookie['value'])
-            return '; '.join(pairs)
-        else:
-            pairs = DotDict()
-            for cookie in self.driver.get_cookies():
-                pairs[cookie['name']] = cookie['value']
-            return pairs
+        try:
+            if is_falsy(as_dict):
+                pairs = []
+                for cookie in self.driver.get_cookies():
+                    pairs.append(cookie['name'] + "=" + cookie['value'])
+                self.driver.report().step(description='Get Cookies',
+                                          message='Got cookies',
+                                          passed=True, screenshot=False)
+                return '; '.join(pairs)
+            else:
+                pairs = DotDict()
+                for cookie in self.driver.get_cookies():
+                    pairs[cookie['name']] = cookie['value']
+                self.driver.report().step(description='Get Cookies',
+                                          message='Got cookies',
+                                          passed=True, screenshot=False)
+                return pairs
+        except Exception as e:
+            self.driver.report().step(description='Get Cookies',
+                                      message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def get_cookie(self, name):
@@ -109,7 +139,13 @@ class CookieKeywords(LibraryComponent):
         """
         cookie = self.driver.get_cookie(name)
         if not cookie:
+            self.driver.report().step(description='Get Cookie',
+                                      message='Cookie not found',
+                                      passed=False, screenshot=True)
             raise CookieNotFound("Cookie with name '%s' not found." % name)
+        self.driver.report().step(description='Get Cookie',
+                                  message='Got cookie',
+                                  passed=True, screenshot=False)
         return CookieInformation(**cookie)
 
     @keyword
@@ -140,7 +176,16 @@ class CookieKeywords(LibraryComponent):
             new_cookie['secure'] = is_truthy(secure)
         if not is_noney(expiry):
             new_cookie['expiry'] = self._expiry(expiry)
-        self.driver.add_cookie(new_cookie)
+        try:
+            self.driver.add_cookie(new_cookie)
+            self.driver.report().step(description='Add Cookie',
+                                      message='Added cookie',
+                                      passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Add Cookie',
+                                      message='Error: ' + str(e),
+                                      passed=False, screenshot=True)
+            raise AssertionError
 
     def _expiry(self, expiry):
         try:
