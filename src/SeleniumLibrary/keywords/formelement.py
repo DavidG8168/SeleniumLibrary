@@ -34,11 +34,17 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.info("Submitting form '%s'." % locator)
-        if is_noney(locator):
-            locator = 'tag:form'
-        element = self.find_element(locator, tag='form')
-        element.submit()
+        try:
+            self.info("Submitting form '%s'." % locator)
+            if is_noney(locator):
+                locator = 'tag:form'
+            element = self.find_element(locator, tag='form')
+            element.submit()
+            self.driver.report().step(description='Submit Form', message='Submitted form', passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Submit Form', message='Could not submit form', passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def checkbox_should_be_selected(self, locator):
@@ -48,10 +54,23 @@ class FormElementKeywords(LibraryComponent):
         syntax.
         """
         self.info("Verifying checkbox '%s' is selected." % locator)
-        element = self._get_checkbox(locator)
+        element = None
+        try:
+            element = self._get_checkbox(locator)
+        except Exception as e:
+            self.driver.report().step(description='Checkbox Should Be Selected', message='Error: ' + str(e), passed=False,
+                                      screenshot=True)
+            raise AssertionError
         if not element.is_selected():
+            self.driver.report().step(description='Checkbox Should Be Selected', message='Checkbox was not selected', passed=False,
+                                      screenshot=True)
             raise AssertionError("Checkbox '%s' should have been selected "
                                  "but was not." % locator)
+
+        self.driver.report().step(description='Checkbox Should Be Selected', message='Checkbox was selected',
+                                passed=True,
+                                screenshot=False)
+
 
     @keyword
     def checkbox_should_not_be_selected(self, locator):
@@ -61,10 +80,22 @@ class FormElementKeywords(LibraryComponent):
         syntax.
         """
         self.info("Verifying checkbox '%s' is not selected." % locator)
-        element = self._get_checkbox(locator)
+        element = None
+        try:
+            element = self._get_checkbox(locator)
+        except Exception as e:
+            self.driver.report().step(description='Checkbox Should Not Be Selected', message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
         if element.is_selected():
+            self.driver.report().step(description='Checkbox Should Not Be Selected', message='Element is selected',
+                                      passed=False,
+                                      screenshot=True)
             raise AssertionError("Checkbox '%s' should not have been "
                                  "selected." % locator)
+        self.driver.report().step(description='Checkbox Should Not Be Selected', message='Element is not selected', passed=True,
+                                  screenshot=False)
 
     @keyword
     def page_should_contain_checkbox(self, locator, message=None, loglevel='TRACE'):
@@ -76,7 +107,17 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.assert_page_contains(locator, 'checkbox', message, loglevel)
+        try:
+            self.assert_page_contains(locator, 'checkbox', message, loglevel)
+            self.driver.report().step(description='Page Should Contain Checkbox', message='Page contains checkbox',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Contain Checkbox', message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def page_should_not_contain_checkbox(self, locator, message=None, loglevel='TRACE'):
@@ -88,7 +129,16 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.assert_page_not_contains(locator, 'checkbox', message, loglevel)
+        try:
+            self.assert_page_not_contains(locator, 'checkbox', message, loglevel)
+            self.driver.report().step(description='Page Should Not contain Checkbox', message='Page does not contain checkbox',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Not Contain Checkox', message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def select_checkbox(self, locator):
@@ -99,10 +149,19 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.info("Selecting checkbox '%s'." % locator)
-        element = self._get_checkbox(locator)
-        if not element.is_selected():
-            element.click()
+        try:
+            self.info("Selecting checkbox '%s'." % locator)
+            element = self._get_checkbox(locator)
+            if not element.is_selected():
+                element.click()
+            self.driver.report().step(description='Select Checkbox', message='Checkbox selected',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Select Checkbox', message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def unselect_checkbox(self, locator):
@@ -113,10 +172,19 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.info("Unselecting checkbox '%s'." % locator)
-        element = self._get_checkbox(locator)
-        if element.is_selected():
-            element.click()
+        try:
+            self.info("Unselecting checkbox '%s'." % locator)
+            element = self._get_checkbox(locator)
+            if element.is_selected():
+                element.click()
+            self.driver.report().step(description='Unselect Checkbox', message='Unselected checkbox',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Unselect Checkbox', message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def page_should_contain_radio_button(self, locator, message=None, loglevel='TRACE'):
@@ -129,7 +197,18 @@ class FormElementKeywords(LibraryComponent):
         syntax. When using the default locator strategy, radio buttons are
         searched using ``id``, ``name`` and ``value``.
         """
-        self.assert_page_contains(locator, 'radio button', message, loglevel)
+        try:
+            self.assert_page_contains(locator, 'radio button', message, loglevel)
+            self.driver.report().step(description='Page Should Contain Radio Button', message='Page contains radio button',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Contain Radio Button', message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
+
+
 
     @keyword
     def page_should_not_contain_radio_button(self, locator, message=None, loglevel='TRACE'):
@@ -142,8 +221,17 @@ class FormElementKeywords(LibraryComponent):
         syntax. When using the default locator strategy, radio buttons are
         searched using ``id``, ``name`` and ``value``.
         """
-        self.assert_page_not_contains(locator, 'radio button', message,
-                                      loglevel)
+        try:
+            self.assert_page_not_contains(locator, 'radio button', message,
+                                          loglevel)
+            self.driver.report().step(description='Page Should Not Contain Radio Button', message='Page does not contain radio button',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Not Contain Radio Button', message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def radio_button_should_be_set_to(self, group_name, value):
@@ -153,12 +241,26 @@ class FormElementKeywords(LibraryComponent):
         """
         self.info("Verifying radio button '%s' has selection '%s'."
                   % (group_name, value))
-        elements = self._get_radio_buttons(group_name)
-        actual_value = self._get_value_from_radio_buttons(elements)
+        try:
+            elements = self._get_radio_buttons(group_name)
+            actual_value = self._get_value_from_radio_buttons(elements)
+        except Exception as e:
+            self.driver.report().step(description='Radio Button Should Be Set To',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
         if actual_value is None or actual_value != value:
+            self.driver.report().step(description='Radio Button Should Be Set To', message='Radio button was not set to value',
+                                      passed=False,
+                                      screenshot=True)
             raise AssertionError("Selection of radio button '%s' should have "
                                  "been '%s' but was '%s'."
                                  % (group_name, value, actual_value))
+        self.driver.report().step(description='Radio Button Should Be Set To',
+                                  message='Radio was set to value',
+                                  passed=True,
+                                  screenshot=False)
 
     @keyword
     def radio_button_should_not_be_selected(self, group_name):
@@ -167,12 +269,27 @@ class FormElementKeywords(LibraryComponent):
         ``group_name`` is the ``name`` of the radio button group.
         """
         self.info("Verifying radio button '%s' has no selection." % group_name)
-        elements = self._get_radio_buttons(group_name)
-        actual_value = self._get_value_from_radio_buttons(elements)
+        try:
+            elements = self._get_radio_buttons(group_name)
+            actual_value = self._get_value_from_radio_buttons(elements)
+        except Exception as e:
+            self.driver.report().step(description='Radio Button Should Not Be Selected',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
         if actual_value is not None:
+            self.driver.report().step(description='Radio Button Should Not Be Selected',
+                                      message='Radio button was selected',
+                                      passed=False,
+                                      screenshot=True)
             raise AssertionError("Radio button group '%s' should not have "
                                  "had selection, but '%s' was selected."
                                  % (group_name, actual_value))
+        self.driver.report().step(description='Radio Button Should Not Be Selected',
+                                  message='Radio button was not selected',
+                                  passed=True,
+                                  screenshot=False)
 
     @keyword
     def select_radio_button(self, group_name, value):
@@ -189,10 +306,20 @@ class FormElementKeywords(LibraryComponent):
         """
         self.info("Selecting '%s' from radio button '%s'."
                   % (value, group_name))
-        element = self._get_radio_button_with_value(group_name, value)
+        try:
+            element = self._get_radio_button_with_value(group_name, value)
+        except Exception as e:
+            self.driver.report().step(description='Select Radio Button',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
         if not element.is_selected():
             element.click()
-
+        self.driver.report().step(description='Select Radio Button',
+                                  message='Selected radio button',
+                                  passed=True,
+                                  screenshot=False)
     @keyword
     def choose_file(self, locator, file_path):
         """Inputs the ``file_path`` into the file input field ``locator``.
@@ -216,6 +343,17 @@ class FormElementKeywords(LibraryComponent):
         try:
             self.info('Sending %s to browser.' % os.path.abspath(file_path))
             self.find_element(locator).send_keys(file_path)
+            self.driver.report().step(description='Choose File',
+                                      message='Uploaded file',
+                                      passed=True,
+                                      screenshot=False)
+            raise AssertionError
+        except Exception as e:
+            self.driver.report().step(description='Choose File',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
         finally:
             self.ctx._running_keyword = None
 
@@ -244,8 +382,19 @@ class FormElementKeywords(LibraryComponent):
         The `clear` argument is new in SeleniumLibrary 4.0. Hiding password
         logging from Selenium logs is new in SeleniumLibrary 4.2.
         """
-        self.info("Typing password into text field '%s'." % locator)
-        self._input_text_into_text_field(locator, password, clear, disable_log=True)
+        try:
+            self.info("Typing password into text field '%s'." % locator)
+            self._input_text_into_text_field(locator, password, clear, disable_log=True)
+            self.driver.report().step(description='Input Password',
+                                      message='Inputted password',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Input Password',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def input_text(self, locator, text, clear=True):
@@ -270,8 +419,19 @@ class FormElementKeywords(LibraryComponent):
         Disabling the file upload the Selenium Grid node and the `clear`
         argument are new in SeleniumLibrary 4.0
         """
-        self.info("Typing text '%s' into text field '%s'." % (text, locator))
-        self._input_text_into_text_field(locator, text, clear)
+        try:
+            self.info("Typing text '%s' into text field '%s'." % (text, locator))
+            self._input_text_into_text_field(locator, text, clear)
+            self.driver.report().step(description='Input Text',
+                                      message='Inputted text into field',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Input Text',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def page_should_contain_textfield(self, locator, message=None, loglevel='TRACE'):
@@ -283,7 +443,18 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.assert_page_contains(locator, 'text field', message, loglevel)
+        try:
+            self.assert_page_contains(locator, 'text field', message, loglevel)
+            self.driver.report().step(description='Page Should Contain Textfield',
+                                      message='Page contains textfield',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Contain Textfield',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def page_should_not_contain_textfield(self, locator, message=None, loglevel='TRACE'):
@@ -295,7 +466,18 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        self.assert_page_not_contains(locator, 'text field', message, loglevel)
+        try:
+            self.assert_page_not_contains(locator, 'text field', message, loglevel)
+            self.driver.report().step(description='Page Should Not Contain Textfield',
+                                      message='Page does not contain textfield',
+                                      passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Not Contain Textfield',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
 
     @keyword
     def textfield_should_contain(self, locator, expected, message=None):
@@ -306,13 +488,29 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        actual = self._get_value(locator, 'text field')
+        actual = None
+        try:
+            actual = self._get_value(locator, 'text field')
+        except Exception as e:
+            self.driver.report().step(description='Textfield Should Contain',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
         if expected not in actual:
             if is_noney(message):
                 message = "Text field '%s' should have contained text '%s' "\
                           "but it contained '%s'." % (locator, expected, actual)
+            self.driver.report().step(description='Textfield Should Contain',
+                                      message='Textfield does not contain expected',
+                                      passed=False,
+                                      screenshot=True)
             raise AssertionError(message)
         self.info("Text field '%s' contains text '%s'." % (locator, expected))
+        self.driver.report().step(description='Textfield Should Contain',
+                                  message='Textfield contains expected',
+                                  passed=True,
+                                  screenshot=False)
 
     @keyword
     def textfield_value_should_be(self, locator, expected, message=None):
@@ -323,13 +521,28 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        actual = self._get_value(locator, 'text field')
+        try:
+            actual = self._get_value(locator, 'text field')
+        except Exception as e:
+            self.driver.report().step(description='Textfield Value Should Be',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
         if actual != expected:
             if is_noney(message):
                 message = "Value of text field '%s' should have been '%s' "\
                           "but was '%s'." % (locator, expected, actual)
+            self.driver.report().step(description='Textfield Value Should Be',
+                                      message='Textfield value not as expected',
+                                      passed=False,
+                                      screenshot=True)
             raise AssertionError(message)
         self.info("Content of text field '%s' is '%s'." % (locator, expected))
+        self.driver.report().step(description='Textfield Value Should Be',
+                                  message='Textfield value equal to expected',
+                                  passed=True,
+                                  screenshot=False)
 
     @keyword
     def textarea_should_contain(self, locator, expected, message=None):
@@ -340,13 +553,29 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        actual = self._get_value(locator, 'text area')
+        actual = None
+        try:
+            actual = self._get_value(locator, 'text area')
+        except Exception as e:
+            self.driver.report().step(description='Textarea Should Contain',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
         if expected not in actual:
             if is_noney(message):
                 message = "Text area '%s' should have contained text '%s' " \
                           "but it had '%s'." % (locator, expected, actual)
+            self.driver.report().step(description='Textarea Should Contain',
+                                      message='Textare did not contain expected text',
+                                      passed=False,
+                                      screenshot=True)
             raise AssertionError(message)
         self.info("Text area '%s' contains text '%s'." % (locator, expected))
+        self.driver.report().step(description='Textarea Should Contain',
+                                  message='Textarea contains expected text',
+                                  passed=True,
+                                  screenshot=False)
 
     @keyword
     def textarea_value_should_be(self, locator, expected, message=None):
@@ -357,13 +586,27 @@ class FormElementKeywords(LibraryComponent):
         See the `Locating elements` section for details about the locator
         syntax.
         """
-        actual = self._get_value(locator, 'text area')
+        actual = None
+        try:
+            actual = self._get_value(locator, 'text area')
+        except Exception as e:
+            self.driver.report().step(description='Textarea Value Should Be',
+                                      message='Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
+            raise AssertionError
         if expected != actual:
             if is_noney(message):
                 message = "Text area '%s' should have had text '%s' " \
                           "but it had '%s'." % (locator, expected, actual)
+            self.driver.report().step(description='Textarea Value Should Be', message='Textarea value does not match expected',
+                                      passed=False,
+                                      screenshot=True)
             raise AssertionError(message)
         self.info("Content of text area '%s' is '%s'." % (locator, expected))
+        self.driver.report().step(description='Textarea Value Should Be', message='Textarea value matches expected',
+                                  passed=True,
+                                  screenshot=False)
 
     @keyword
     def page_should_contain_button(self, locator, message=None, loglevel='TRACE'):
@@ -378,8 +621,19 @@ class FormElementKeywords(LibraryComponent):
         """
         try:
             self.assert_page_contains(locator, 'input', message, loglevel)
+            self.driver.report().step(description='Page Should Contain Button', message='Page should contain button',
+                                      passed=True,
+                                      screenshot=False)
         except AssertionError:
             self.assert_page_contains(locator, 'button', message, loglevel)
+            self.driver.report().step(description='Page Should Contain Button', message='Page should contain button',
+                                      passed=True,
+                                      screenshot=False)
+            return
+        self.driver.report().step(description='Page Should Contain Button', message='Page does not contain button at locator',
+                                  passed=False,
+                                  screenshot=True)
+        raise AssertionError
 
     @keyword
     def page_should_not_contain_button(self, locator, message=None, loglevel='TRACE'):
@@ -392,8 +646,13 @@ class FormElementKeywords(LibraryComponent):
         syntax. When using the default locator strategy, buttons are
         searched using ``id``, ``name``, and ``value``.
         """
-        self.assert_page_not_contains(locator, 'button', message, loglevel)
-        self.assert_page_not_contains(locator, 'input', message, loglevel)
+        try:
+            self.assert_page_not_contains(locator, 'button', message, loglevel)
+            self.assert_page_not_contains(locator, 'input', message, loglevel)
+            self.driver.report().step(description='Page Should Not Contain Button', message='Page does not contain button', passed=True, screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description='Page Should Not Contain Button', message='Page contains button. Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     def _get_value(self, locator, tag):
         return self.find_element(locator, tag).get_attribute('value')
