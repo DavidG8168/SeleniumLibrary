@@ -45,13 +45,27 @@ class WaitingKeywords(LibraryComponent):
         | `Wait For Condition` | style = document.querySelector('h1').style; return style.background == "red" && style.color == "white" |
         """
         if 'return' not in condition:
+            self.driver.report().step(description="Wait for condition " + condition,
+                                      message="Condition '%s' did not have mandatory 'return'."
+                                              % condition,
+                                      passed=False,
+                                      screenshot=True)
             raise ValueError("Condition '%s' did not have mandatory 'return'."
                              % condition)
-        self._wait_until(
-            lambda: self.driver.execute_script(condition) is True,
-            "Condition '%s' did not become true in <TIMEOUT>." % condition,
-            timeout, error
-        )
+        try:
+            self._wait_until(
+                lambda: self.driver.execute_script(condition) is True,
+                "Condition '%s' did not become true in <TIMEOUT>." % condition,
+                timeout, error
+            )
+            self.driver.report().step(description="Wait for condition " + condition,
+                                      message="Waited, condtion  " + condition + " was met", passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait for condition " + condition,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_location_is(self, expected, timeout=None, message=None):
@@ -68,11 +82,19 @@ class WaitingKeywords(LibraryComponent):
 
         New in SeleniumLibrary 4.0
         """
-
         expected = str(expected)
-        self._wait_until(lambda: expected == self.driver.current_url,
-                         "Location did not become '%s' in <TIMEOUT>." % expected,
-                         timeout, message)
+        try:
+            self._wait_until(lambda: expected == self.driver.current_url,
+                             "Location did not become '%s' in <TIMEOUT>." % expected,
+                             timeout, message)
+            self.driver.report().step(description="Wait until URL is " + expected,
+                                      message="Waited, URL is " + expected, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until URL is " + expected,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_location_is_not(self, location, timeout=None, message=None):
@@ -90,9 +112,18 @@ class WaitingKeywords(LibraryComponent):
         New in SeleniumLibrary 4.3
         """
         location = str(location)
-        self._wait_until(lambda: location != self.driver.current_url,
-                         "Location is '%s' in <TIMEOUT>." % location,
-                         timeout, message)
+        try:
+            self._wait_until(lambda: location != self.driver.current_url,
+                             "Location is '%s' in <TIMEOUT>." % location,
+                             timeout, message)
+            self.driver.report().step(description="Wait until URL is not location " + location,
+                                      message="Waited, location is not" + location, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until URL is not location " + location,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_location_contains(self, expected, timeout=None, message=None):
@@ -110,9 +141,18 @@ class WaitingKeywords(LibraryComponent):
         New in SeleniumLibrary 4.0
         """
         expected = str(expected)
-        self._wait_until(lambda: expected in self.driver.current_url,
-                         "Location did not contain '%s' in <TIMEOUT>." % expected,
-                         timeout, message)
+        try:
+            self._wait_until(lambda: expected in self.driver.current_url,
+                             "Location did not contain '%s' in <TIMEOUT>." % expected,
+                             timeout, message)
+            self.driver.report().step(description="Wait until URL contains expected " + expected,
+                                      message="Waited, URL contains " + expected, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until URL contains expected " + expected,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_location_does_not_contain(self, location, timeout=None, message=None):
@@ -130,9 +170,18 @@ class WaitingKeywords(LibraryComponent):
         New in SeleniumLibrary 4.3
         """
         location = str(location)
-        self._wait_until(lambda: location not in self.driver.current_url,
-                         "Location did contain '%s' in <TIMEOUT>." % location,
-                         timeout, message)
+        try:
+            self._wait_until(lambda: location not in self.driver.current_url,
+                             "Location did contain '%s' in <TIMEOUT>." % location,
+                             timeout, message)
+            self.driver.report().step(description="Wait until URL does not contain location " + location,
+                                      message="Waited, location is not contained" + location, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until URL does not contain location " + location,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_page_contains(self, text, timeout=None, error=None):
@@ -144,10 +193,18 @@ class WaitingKeywords(LibraryComponent):
 
         ``error`` can be used to override the default error message.
         """
-        self._wait_until(lambda: self.is_text_present(text),
-                         "Text '%s' did not appear in <TIMEOUT>." % text,
-                         timeout, error)
-
+        try:
+            self._wait_until(lambda: self.is_text_present(text),
+                             "Text '%s' did not appear in <TIMEOUT>." % text,
+                             timeout, error)
+            self.driver.report().step(description="Wait until page contains text " + text,
+                                      message="Waited, text is contained" + text, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until page contains text " + text,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
     @keyword
     def wait_until_page_does_not_contain(self, text, timeout=None,
                                          error=None):
@@ -159,10 +216,18 @@ class WaitingKeywords(LibraryComponent):
 
         ``error`` can be used to override the default error message.
         """
-        self._wait_until(lambda: not self.is_text_present(text),
-                         "Text '%s' did not disappear in <TIMEOUT>." % text,
-                         timeout, error)
-
+        try:
+            self._wait_until(lambda: not self.is_text_present(text),
+                             "Text '%s' did not disappear in <TIMEOUT>." % text,
+                             timeout, error)
+            self.driver.report().step(description="Wait until page does not contain text " + text,
+                                      message="Waited, text is not contained " + text, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until page does not contain text " + text,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
     @keyword
     def wait_until_page_contains_element(self, locator, timeout=None,
                                          error=None, limit=None):
@@ -182,18 +247,27 @@ class WaitingKeywords(LibraryComponent):
 
         ``limit`` is new in SeleniumLibrary 4.4
         """
-        if is_noney(limit):
-            return self._wait_until(
-                lambda: self.find_element(locator, required=False) is not None,
-                "Element '%s' did not appear in <TIMEOUT>." % locator,
+        try:
+            if is_noney(limit):
+                return self._wait_until(
+                    lambda: self.find_element(locator, required=False) is not None,
+                    "Element '%s' did not appear in <TIMEOUT>." % locator,
+                    timeout, error
+                )
+            limit = int(limit)
+            self._wait_until(
+                lambda: len(self.find_elements(locator)) == limit,
+                'Page should have contained "%s" %s element(s) within <TIMEOUT>.' % (limit, locator),
                 timeout, error
             )
-        limit = int(limit)
-        self._wait_until(
-            lambda: len(self.find_elements(locator)) == limit,
-            'Page should have contained "%s" %s element(s) within <TIMEOUT>.' % (limit, locator),
-            timeout, error
-        )
+            self.driver.report().step(description="Wait until page contains element at locator " + locator,
+                                      message="Waited, element is not contained " + text, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until page contains element at locator " + locator,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_page_does_not_contain_element(self, locator, timeout=None,
@@ -214,18 +288,27 @@ class WaitingKeywords(LibraryComponent):
 
         ``limit`` is new in SeleniumLibrary 4.4
         """
-        if is_noney(limit):
-            return self._wait_until(
-                lambda: self.find_element(locator, required=False) is None,
-                "Element '%s' did not disappear in <TIMEOUT>." % locator,
+        try:
+            if is_noney(limit):
+                return self._wait_until(
+                    lambda: self.find_element(locator, required=False) is None,
+                    "Element '%s' did not disappear in <TIMEOUT>." % locator,
+                    timeout, error
+                )
+            limit = int(limit)
+            self._wait_until(
+                lambda: len(self.find_elements(locator)) != limit,
+                'Page should have not contained "%s" %s element(s) within <TIMEOUT>.' % (limit, locator),
                 timeout, error
             )
-        limit = int(limit)
-        self._wait_until(
-            lambda: len(self.find_elements(locator)) != limit,
-            'Page should have not contained "%s" %s element(s) within <TIMEOUT>.' % (limit, locator),
-            timeout, error
-        )
+            self.driver.report().step(description="Wait until page does not contain element at locator " + locator,
+                                      message="Waited, element is not contained " + text, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until page does not contain element at locator " + locator,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_element_is_visible(self, locator, timeout=None,
@@ -239,11 +322,20 @@ class WaitingKeywords(LibraryComponent):
 
         ``error`` can be used to override the default error message.
         """
-        self._wait_until(
-            lambda: self.is_visible(locator),
-            "Element '%s' not visible after <TIMEOUT>." % locator,
-            timeout, error
-        )
+        try:
+            self._wait_until(
+                lambda: self.is_visible(locator),
+                "Element '%s' not visible after <TIMEOUT>." % locator,
+                timeout, error
+            )
+            self.driver.report().step(description="Wait until element is visible at locator " + locator,
+                                      message="Waited, element is visible " + text, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until element is visible at locator " + locator,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_element_is_not_visible(self, locator, timeout=None,
@@ -257,11 +349,20 @@ class WaitingKeywords(LibraryComponent):
 
         ``error`` can be used to override the default error message.
         """
-        self._wait_until(
-            lambda: not self.is_visible(locator),
-            "Element '%s' still visible after <TIMEOUT>." % locator,
-            timeout, error
-        )
+        try:
+            self._wait_until(
+                lambda: not self.is_visible(locator),
+                "Element '%s' still visible after <TIMEOUT>." % locator,
+                timeout, error
+            )
+            self.driver.report().step(description="Wait until element is not visible at locator " + locator,
+                                      message="Waited, element is not visible " + text, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until element is not visible at locator " + locator,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_element_is_enabled(self, locator, timeout=None,
@@ -280,11 +381,20 @@ class WaitingKeywords(LibraryComponent):
         Considering read-only elements to be disabled is a new feature
         in SeleniumLibrary 3.0.
         """
-        self._wait_until(
-            lambda: self.is_element_enabled(locator),
-            "Element '%s' was not enabled in <TIMEOUT>." % locator,
-            timeout, error
-        )
+        try:
+            self._wait_until(
+                lambda: self.is_element_enabled(locator),
+                "Element '%s' was not enabled in <TIMEOUT>." % locator,
+                timeout, error
+            )
+            self.driver.report().step(description="Wait until element is enabled at locator " + locator,
+                                      message="Waited, element is enabled " + text, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until element is enabled at locator " + locator,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_element_contains(self, locator, text, timeout=None,
@@ -298,11 +408,20 @@ class WaitingKeywords(LibraryComponent):
 
         ``error`` can be used to override the default error message.
         """
-        self._wait_until(
-            lambda: text in self.find_element(locator).text,
-            "Element '%s' did not get text '%s' in <TIMEOUT>." % (locator, text),
-            timeout, error
-        )
+        try:
+            self._wait_until(
+                lambda: text in self.find_element(locator).text,
+                "Element '%s' did not get text '%s' in <TIMEOUT>." % (locator, text),
+                timeout, error
+            )
+            self.driver.report().step(description="Wait until element contains at locator " + locator,
+                                      message="Waited, element contains " + text, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until element contains at locator " + locator,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     @keyword
     def wait_until_element_does_not_contain(self, locator, text, timeout=None,
@@ -316,11 +435,20 @@ class WaitingKeywords(LibraryComponent):
 
         ``error`` can be used to override the default error message.
         """
-        self._wait_until(
-            lambda: text not in self.find_element(locator).text,
-            "Element '%s' still had text '%s' after <TIMEOUT>." % (locator, text),
-            timeout, error
-        )
+        try:
+            self._wait_until(
+                lambda: text not in self.find_element(locator).text,
+                "Element '%s' still had text '%s' after <TIMEOUT>." % (locator, text),
+                timeout, error
+            )
+            self.driver.report().step(description="Wait until element does not contain at locator " + locator,
+                                      message="Waited, element does not contain " + text, passed=True,
+                                      screenshot=False)
+        except Exception as e:
+            self.driver.report().step(description="Wait until element does not contain at locator " + locator,
+                                      message=str(e),
+                                      passed=False,
+                                      screenshot=True)
 
     def _wait_until(self, condition, error, timeout=None, custom_error=None):
         timeout = self.get_timeout(timeout)
@@ -340,7 +468,6 @@ class WaitingKeywords(LibraryComponent):
             except ElementNotFound as err:
                 not_found = str(err)
             except StaleElementReferenceException as err:
-                self.info('Suppressing StaleElementReferenceException from Selenium.')
                 not_found = err
             else:
                 not_found = None
