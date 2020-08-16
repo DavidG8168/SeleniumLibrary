@@ -106,6 +106,7 @@ class ScreenshotKeywords(LibraryComponent):
         | `File Should Not Exist`   | EMBED                                  |
         """
         if not self.drivers.current:
+            self.driver.report().step(description="Take page screenshot", message="Cannot capture screenshot because no browser is open.", passed="False", screenshot="True")
             self.info('Cannot capture screenshot because no browser is open.')
             return
         if self._decide_embedded(filename):
@@ -116,14 +117,29 @@ class ScreenshotKeywords(LibraryComponent):
         path = self._get_screenshot_path(filename)
         self._create_directory(path)
         if not self.driver.save_screenshot(path):
+            self.driver.report().step(description="Take page screenshot to file",
+                                      message="Failed to save screenshot '{}'.".format(path), passed="False",
+                                      screenshot="True")
             raise RuntimeError("Failed to save screenshot '{}'.".format(path))
         self._embed_to_log_as_file(path, 800)
+        self.driver.report().step(description="Take page screenshot to file",
+                                  message="Failed to save screenshot '{}'.".format(path), passed="False",
+                                  screenshot="True")
         return path
 
     def _capture_page_screen_to_log(self):
-        screenshot_as_base64 = self.driver.get_screenshot_as_base64()
-        self._embed_to_log_as_base64(screenshot_as_base64, 800)
-        return EMBED
+        try:
+            screenshot_as_base64 = self.driver.get_screenshot_as_base64()
+            self._embed_to_log_as_base64(screenshot_as_base64, 800)
+            self.driver.report().step(description="Take page screenshot to log",
+                                      message="Page screenshot has been taken and saved in logs", passed="True",
+                                      screenshot="False")
+            return EMBED
+        except Exception as e:
+            self.driver.report().step(description='Take page screenshot to log',
+                                      message='Could not save screenshot to log. Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
+
 
     @keyword
     def capture_element_screenshot(self, locator, filename=DEFAULT_FILENAME_ELEMENT):
@@ -147,6 +163,9 @@ class ScreenshotKeywords(LibraryComponent):
         | `Capture Element Screenshot` | id:image_id | EMBED                          |
         """
         if not self.drivers.current:
+            self.driver.report().step(description="Capture element screenshot",
+                                      message="Cannot capture screenshot from element because no browser is open", passed="False",
+                                      screenshot="True")
             self.info('Cannot capture screenshot from element because no browser is open.')
             return
         element = self.find_element(locator, required=True)
@@ -158,12 +177,30 @@ class ScreenshotKeywords(LibraryComponent):
         path = self._get_screenshot_path(filename)
         self._create_directory(path)
         if not element.screenshot(path):
+            self.driver.report().step(description="Capture element screenshot to file",
+                                      message="Failed to save element screenshot '{}'.".format(path),
+                                      passed="False",
+                                      screenshot="True")
             raise RuntimeError("Failed to save element screenshot '{}'.".format(path))
         self._embed_to_log_as_file(path, 400)
+        self.driver.report().step(description="Capture element screenshot to file",
+                                  message="Element screenshot was saved to " + filename,
+                                  passed="True",
+                                  screenshot="False")
         return path
 
     def _capture_element_screen_to_log(self, element):
-        self._embed_to_log_as_base64(element.screenshot_as_base64, 400)
+        try:
+            self.driver.report().step(description="Capture element screenshot to log",
+                                      message="Element screenshot taken succsuflly to log",
+                                      passed="True",
+                                      screenshot="False")
+            self._embed_to_log_as_base64(element.screenshot_as_base64, 400)
+        except Exception as e:
+            self.driver.report().step(description='Take page screenshot to log',
+                                      message='Could not save screenshot to log. Error: ' + str(e), passed=False,
+                                      creenshot=True)
+            raise AssertionError
         return EMBED
 
     @property
