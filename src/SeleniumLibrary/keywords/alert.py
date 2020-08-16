@@ -47,6 +47,7 @@ class AlertKeywords(LibraryComponent):
             self.driver.report().step(description='Input Text Into Alert', message='Inputted ' + text + ' into alert successfully', passed=True, screenshot=False)
         except Exception as e:
             self.driver.report().step(description='Input Text Into Alert', message='Could not input ' + text + ' into alert. Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     @keyword
     def alert_should_be_present(self, text='', action=ACCEPT, timeout=None):
@@ -66,7 +67,6 @@ class AlertKeywords(LibraryComponent):
         """
         message = self.handle_alert(action, timeout)
         if text and text != message:
-            #
             self.driver.report().step(description='Alert Should Be Present', message='Alert message should have been ' + text + ' but it was ' + message, passed=False, screenshot=True)
             raise AssertionError("Alert message should have been '%s' but it "
                                  "was '%s'." % (text, message))
@@ -129,6 +129,7 @@ class AlertKeywords(LibraryComponent):
             return self._handle_alert(alert, action)
         except Exception as e:
             self.driver.report().step(description='Handle Alert ' + action, message='Could not handle alert according to action. Error: ' + str(e), passed=False, screenshot=True)
+            raise AssertionError
 
     def _handle_alert(self, alert, action):
         action = action.upper()
