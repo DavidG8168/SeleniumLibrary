@@ -1,7 +1,7 @@
 import pytest
 from mockito import mock, unstub, when
 
-from SeleniumLibrary.keywords import WaitingKeywords
+from TestProjectSeleniumLibrary.keywords import WaitingKeywords
 
 TIMEOUT = 0.01
 

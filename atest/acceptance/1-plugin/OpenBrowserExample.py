@@ -1,9 +1,9 @@
 from robot.api import logger
 from selenium import webdriver
 
-from SeleniumLibrary.base import LibraryComponent, keyword
-from SeleniumLibrary.keywords import BrowserManagementKeywords
-from SeleniumLibrary.keywords.webdrivertools import WebDriverCreator
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.keywords import BrowserManagementKeywords
+from TestProjectSeleniumLibrary.keywords.webdrivertools import WebDriverCreator
 
 
 class OpenBrowserExample(LibraryComponent):

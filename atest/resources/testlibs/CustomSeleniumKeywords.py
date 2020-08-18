@@ -1,7 +1,7 @@
 from robot.libraries.BuiltIn import BuiltIn
 
-from SeleniumLibrary import SeleniumLibrary
-from SeleniumLibrary.base import keyword
+from TestProjectSeleniumLibrary import SeleniumLibrary
+from TestProjectSeleniumLibrary.base import keyword
 
 
 class CustomSeleniumKeywords(SeleniumLibrary):

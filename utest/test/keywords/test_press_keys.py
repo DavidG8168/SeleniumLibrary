@@ -13,8 +13,8 @@ except ImportError:
     else:
         raise
 
-from SeleniumLibrary.keywords import ElementKeywords
-from SeleniumLibrary.utils import PY3
+from TestProjectSeleniumLibrary.keywords import ElementKeywords
+from TestProjectSeleniumLibrary.utils import PY3
 
 
 class ElementKeywordsPessKeys(unittest.TestCase):

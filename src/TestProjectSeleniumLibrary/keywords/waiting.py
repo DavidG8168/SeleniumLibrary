@@ -18,9 +18,9 @@ import time
 
 from selenium.common.exceptions import StaleElementReferenceException
 
-from SeleniumLibrary.base import LibraryComponent, keyword
-from SeleniumLibrary.errors import ElementNotFound
-from SeleniumLibrary.utils import is_noney, secs_to_timestr
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.errors import ElementNotFound
+from TestProjectSeleniumLibrary.utils import is_noney, secs_to_timestr
 
 
 class WaitingKeywords(LibraryComponent):

@@ -3,8 +3,8 @@ import uuid
 
 from mockito import mock
 
-from SeleniumLibrary.errors import WindowNotFound
-from SeleniumLibrary.locators import WindowManager
+from TestProjectSeleniumLibrary.errors import WindowNotFound
+from TestProjectSeleniumLibrary.locators import WindowManager
 
 
 class WindowManagerTests(unittest.TestCase):

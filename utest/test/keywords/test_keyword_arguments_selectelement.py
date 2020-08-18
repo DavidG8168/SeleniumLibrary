@@ -3,7 +3,7 @@ import unittest
 from mockito import mock, unstub, when
 
 
-from SeleniumLibrary.keywords import SelectElementKeywords
+from TestProjectSeleniumLibrary.keywords import SelectElementKeywords
 
 
 class KeywordArgumentsElementTest(unittest.TestCase):

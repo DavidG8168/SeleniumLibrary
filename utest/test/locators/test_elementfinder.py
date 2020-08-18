@@ -1,8 +1,8 @@
 import pytest
 from mockito import any, mock, verify, when, unstub
 
-from SeleniumLibrary.errors import ElementNotFound
-from SeleniumLibrary.locators.elementfinder import ElementFinder
+from TestProjectSeleniumLibrary.errors import ElementNotFound
+from TestProjectSeleniumLibrary.locators.elementfinder import ElementFinder
 
 
 @pytest.fixture(scope='function')

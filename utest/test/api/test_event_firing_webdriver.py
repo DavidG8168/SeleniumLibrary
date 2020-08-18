@@ -4,7 +4,7 @@ import unittest
 from robot.errors import DataError
 from selenium.webdriver.support.events import AbstractEventListener
 
-from SeleniumLibrary import SeleniumLibrary
+from TestProjectSeleniumLibrary import SeleniumLibrary
 
 
 class EventFiringWebDriverSeleniumLibrary(unittest.TestCase):

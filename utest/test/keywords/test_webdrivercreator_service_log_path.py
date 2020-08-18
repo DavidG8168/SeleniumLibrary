@@ -6,8 +6,8 @@ import pytest
 from mockito import mock, when, unstub, ANY
 from selenium import webdriver
 
-from SeleniumLibrary.keywords import WebDriverCreator
-from SeleniumLibrary.utils import WINDOWS
+from TestProjectSeleniumLibrary.keywords import WebDriverCreator
+from TestProjectSeleniumLibrary.utils import WINDOWS
 
 
 @pytest.fixture(scope='module')

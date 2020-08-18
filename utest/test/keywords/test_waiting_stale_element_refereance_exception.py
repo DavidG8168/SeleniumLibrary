@@ -2,7 +2,7 @@ import pytest
 from selenium.common.exceptions import StaleElementReferenceException
 from mockito import mock, when, unstub
 
-from SeleniumLibrary.keywords import WaitingKeywords
+from TestProjectSeleniumLibrary.keywords import WaitingKeywords
 
 TIMEOUT = 0.5
 

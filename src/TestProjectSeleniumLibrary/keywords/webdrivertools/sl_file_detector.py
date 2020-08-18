@@ -16,7 +16,7 @@
 from robot.libraries.BuiltIn import BuiltIn
 from selenium.webdriver.remote.file_detector import FileDetector, LocalFileDetector
 
-import SeleniumLibrary
+import TestProjectSeleniumLibrary
 
 
 class SelLibLocalFileDetector(FileDetector):
@@ -41,5 +41,5 @@ class SelLibLocalFileDetector(FileDetector):
     def _get_sl(self):
         libraries = BuiltIn().get_library_instance(all=True)
         for library in libraries:
-            if isinstance(libraries[library], SeleniumLibrary.SeleniumLibrary):
+            if isinstance(libraries[library], TestProjectSeleniumLibrary.SeleniumLibrary):
                 return libraries[library]

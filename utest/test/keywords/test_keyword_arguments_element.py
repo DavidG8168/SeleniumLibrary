@@ -1,7 +1,7 @@
 import pytest
 from mockito import mock, unstub, when
 
-from SeleniumLibrary.keywords import ElementKeywords
+from TestProjectSeleniumLibrary.keywords import ElementKeywords
 
 
 @pytest.fixture(scope='function')

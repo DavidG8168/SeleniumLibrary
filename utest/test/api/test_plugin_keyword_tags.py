@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from SeleniumLibrary import SeleniumLibrary
+from TestProjectSeleniumLibrary import SeleniumLibrary
 from .my_lib import my_lib
 from .my_lib_args import my_lib_args
 

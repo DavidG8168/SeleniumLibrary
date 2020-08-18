@@ -25,25 +25,25 @@ from robot.utils.importer import Importer
 
 from robotlibcore import DynamicCore
 
-from SeleniumLibrary.base import LibraryComponent
-from SeleniumLibrary.errors import NoOpenBrowser, PluginError
-from SeleniumLibrary.keywords import (AlertKeywords,
-                                      BrowserManagementKeywords,
-                                      CookieKeywords,
-                                      ElementKeywords,
-                                      FormElementKeywords,
-                                      FrameKeywords,
-                                      JavaScriptKeywords,
-                                      RunOnFailureKeywords,
-                                      ScreenshotKeywords,
-                                      SelectElementKeywords,
-                                      TableElementKeywords,
-                                      WaitingKeywords,
-                                      WebDriverCache,
-                                      WindowKeywords)
-from SeleniumLibrary.keywords.screenshot import EMBED
-from SeleniumLibrary.locators import ElementFinder
-from SeleniumLibrary.utils import LibraryListener, timestr_to_secs, is_truthy
+from TestProjectSeleniumLibrary.base import LibraryComponent
+from TestProjectSeleniumLibrary.errors import NoOpenBrowser, PluginError
+from TestProjectSeleniumLibrary.keywords import (AlertKeywords,
+                                                 BrowserManagementKeywords,
+                                                 CookieKeywords,
+                                                 ElementKeywords,
+                                                 FormElementKeywords,
+                                                 FrameKeywords,
+                                                 JavaScriptKeywords,
+                                                 RunOnFailureKeywords,
+                                                 ScreenshotKeywords,
+                                                 SelectElementKeywords,
+                                                 TableElementKeywords,
+                                                 WaitingKeywords,
+                                                 WebDriverCache,
+                                                 WindowKeywords)
+from TestProjectSeleniumLibrary.keywords.screenshot import EMBED
+from TestProjectSeleniumLibrary.locators import ElementFinder
+from TestProjectSeleniumLibrary.utils import LibraryListener, timestr_to_secs, is_truthy
 
 
 __version__ = '5.0.0.dev1'

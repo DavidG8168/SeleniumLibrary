@@ -1,4 +1,4 @@
-from SeleniumLibrary.base import keyword
+from TestProjectSeleniumLibrary.base import keyword
 
 
 class my_lib_not_inherit(object):

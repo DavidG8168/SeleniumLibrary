@@ -6,7 +6,7 @@ import pytest
 from mockito import mock, unstub, when, ANY
 from selenium import webdriver
 
-from SeleniumLibrary.keywords import WebDriverCreator
+from TestProjectSeleniumLibrary.keywords import WebDriverCreator
 
 
 LOG_DIR = '/log/dir'

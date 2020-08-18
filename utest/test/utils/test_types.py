@@ -1,4 +1,4 @@
-from SeleniumLibrary.utils import is_noney
+from TestProjectSeleniumLibrary.utils import is_noney
 
 TRUTHY = ['foo', ' ', 1, 2.3, True, [1], 'True', {'k': 'v'}]
 

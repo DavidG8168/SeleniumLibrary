@@ -18,8 +18,8 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from SeleniumLibrary.base import keyword, LibraryComponent
-from SeleniumLibrary.utils import secs_to_timestr
+from TestProjectSeleniumLibrary.base import keyword, LibraryComponent
+from TestProjectSeleniumLibrary.utils import secs_to_timestr
 
 
 class AlertKeywords(LibraryComponent):

@@ -4,7 +4,7 @@ from mockito import mock, verify, when, unstub
 from robot.utils.connectioncache import NoConnection
 from selenium.common.exceptions import TimeoutException, RemoteDriverServerException
 
-from SeleniumLibrary.keywords import WebDriverCache
+from TestProjectSeleniumLibrary.keywords import WebDriverCache
 
 
 class WebDriverCacheTests(unittest.TestCase):

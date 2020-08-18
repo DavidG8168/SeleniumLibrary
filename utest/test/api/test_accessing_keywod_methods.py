@@ -1,6 +1,6 @@
 import unittest
 
-from SeleniumLibrary import SeleniumLibrary
+from TestProjectSeleniumLibrary import SeleniumLibrary
 
 
 class KeywordsMethodsTests(unittest.TestCase):

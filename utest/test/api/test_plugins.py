@@ -4,8 +4,8 @@ import unittest
 
 from robot.errors import DataError
 
-from SeleniumLibrary import SeleniumLibrary
-from SeleniumLibrary.errors import PluginError
+from TestProjectSeleniumLibrary import SeleniumLibrary
+from TestProjectSeleniumLibrary.errors import PluginError
 
 
 class ExtendingSeleniumLibrary(unittest.TestCase):

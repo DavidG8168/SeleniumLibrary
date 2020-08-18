@@ -1,6 +1,6 @@
 from robot.libraries.BuiltIn import BuiltIn
 
-from SeleniumLibrary import ElementFinder
+from TestProjectSeleniumLibrary import ElementFinder
 
 
 def custom_library_locator(parent, criteria, tag, constraints):

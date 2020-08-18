@@ -13,7 +13,7 @@ except ImportError:
     else:
         raise
 
-from SeleniumLibrary.keywords import WebDriverCreator
+from TestProjectSeleniumLibrary.keywords import WebDriverCreator
 
 
 class FireFoxProfileParsingTests(unittest.TestCase):

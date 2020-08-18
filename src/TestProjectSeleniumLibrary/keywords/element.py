@@ -20,10 +20,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
 
-from SeleniumLibrary.base import LibraryComponent, keyword
-from SeleniumLibrary.utils import (is_falsy, is_noney, is_truthy,
-                                   plural_or_not as s)
-from SeleniumLibrary.errors import ElementNotFound
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.utils import (is_falsy, is_noney, is_truthy,
+                                              plural_or_not as s)
+from TestProjectSeleniumLibrary.errors import ElementNotFound
 
 
 class ElementKeywords(LibraryComponent):

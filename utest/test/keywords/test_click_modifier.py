@@ -2,7 +2,7 @@ import pytest
 from mockito import mock, unstub
 from selenium.webdriver.common.keys import Keys
 
-from SeleniumLibrary.keywords import ElementKeywords
+from TestProjectSeleniumLibrary.keywords import ElementKeywords
 
 
 @pytest.fixture(scope='module')

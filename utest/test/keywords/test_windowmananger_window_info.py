@@ -2,7 +2,7 @@ import unittest
 
 from mockito import mock, when, unstub
 
-from SeleniumLibrary.locators.windowmanager import WindowManager
+from TestProjectSeleniumLibrary.locators.windowmanager import WindowManager
 from selenium.common.exceptions import WebDriverException
 
 SCRIPT = "return [ window.id, window.name ];"

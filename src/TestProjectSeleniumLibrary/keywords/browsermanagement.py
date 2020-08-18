@@ -20,10 +20,10 @@ import types
 from src.testproject.sdk.drivers import webdriver
 from selenium.webdriver.support.event_firing_webdriver import EventFiringWebDriver
 
-from SeleniumLibrary.base import keyword, LibraryComponent
-from SeleniumLibrary.locators import WindowManager
-from SeleniumLibrary.utils import (is_truthy, is_noney, secs_to_timestr,
-                                   timestr_to_secs)
+from TestProjectSeleniumLibrary.base import keyword, LibraryComponent
+from TestProjectSeleniumLibrary.locators import WindowManager
+from TestProjectSeleniumLibrary.utils import (is_truthy, is_noney, secs_to_timestr,
+                                              timestr_to_secs)
 
 from .webdrivertools import WebDriverCreator
 

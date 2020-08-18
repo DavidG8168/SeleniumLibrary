@@ -13,7 +13,7 @@ except ImportError:
     else:
         raise
 
-from SeleniumLibrary.keywords import JavaScriptKeywords
+from TestProjectSeleniumLibrary.keywords import JavaScriptKeywords
 
 
 class JavaScriptKeywordsTest(unittest.TestCase):

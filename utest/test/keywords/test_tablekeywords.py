@@ -2,7 +2,7 @@ import unittest
 
 from mockito import mock, when, unstub
 
-from SeleniumLibrary.keywords import TableElementKeywords
+from TestProjectSeleniumLibrary.keywords import TableElementKeywords
 
 
 class TableKeywordsTest(unittest.TestCase):

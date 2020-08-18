@@ -2,7 +2,7 @@ import unittest
 
 from mockito import unstub, when
 
-from SeleniumLibrary.keywords.webdrivertools.sl_file_detector import SelLibLocalFileDetector
+from TestProjectSeleniumLibrary.keywords.webdrivertools.sl_file_detector import SelLibLocalFileDetector
 
 
 class InputTextFileDecorator(unittest.TestCase):

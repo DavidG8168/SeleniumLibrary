@@ -1,4 +1,4 @@
-from SeleniumLibrary.base import keyword
+from TestProjectSeleniumLibrary.base import keyword
 
 @keyword
 def keyword():

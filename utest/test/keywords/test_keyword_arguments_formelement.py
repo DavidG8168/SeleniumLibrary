@@ -1,7 +1,7 @@
 import pytest
 from mockito import mock, unstub, when
 
-from SeleniumLibrary.keywords import FormElementKeywords
+from TestProjectSeleniumLibrary.keywords import FormElementKeywords
 
 
 FALSES = ['False', False, '', None, 'NONE']

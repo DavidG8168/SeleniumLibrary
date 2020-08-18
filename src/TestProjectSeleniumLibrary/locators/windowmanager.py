@@ -20,9 +20,9 @@ from collections import namedtuple
 from selenium.common.exceptions import (NoSuchWindowException,
                                         WebDriverException)
 
-from SeleniumLibrary.base import ContextAware
-from SeleniumLibrary.errors import WindowNotFound
-from SeleniumLibrary.utils import is_string
+from TestProjectSeleniumLibrary.base import ContextAware
+from TestProjectSeleniumLibrary.errors import WindowNotFound
+from TestProjectSeleniumLibrary.utils import is_string
 
 
 WindowInfo = namedtuple('WindowInfo', 'handle, id, name, title, url')

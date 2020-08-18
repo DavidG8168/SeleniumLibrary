@@ -18,9 +18,9 @@ import os
 
 from robot.libraries.BuiltIn import BuiltIn
 
-from SeleniumLibrary.base import LibraryComponent, keyword
-from SeleniumLibrary.errors import ElementNotFound
-from SeleniumLibrary.utils import is_noney, is_truthy
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.errors import ElementNotFound
+from TestProjectSeleniumLibrary.utils import is_noney, is_truthy
 
 
 class FormElementKeywords(LibraryComponent):

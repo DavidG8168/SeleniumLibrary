@@ -2,7 +2,7 @@ import unittest
 
 from mockito import when, unstub, verify
 
-from SeleniumLibrary import SeleniumLibrary
+from TestProjectSeleniumLibrary import SeleniumLibrary
 
 
 class SeleniumLibraryRunOnFailureTest(unittest.TestCase):

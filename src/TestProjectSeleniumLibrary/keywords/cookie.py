@@ -19,9 +19,9 @@ from datetime import datetime
 from robot.libraries.DateTime import convert_date
 from robot.utils import DotDict
 
-from SeleniumLibrary.base import LibraryComponent, keyword
-from SeleniumLibrary.errors import CookieNotFound
-from SeleniumLibrary.utils import is_truthy, is_noney, is_falsy
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.errors import CookieNotFound
+from TestProjectSeleniumLibrary.utils import is_truthy, is_noney, is_falsy
 
 
 class CookieKeywords(LibraryComponent):

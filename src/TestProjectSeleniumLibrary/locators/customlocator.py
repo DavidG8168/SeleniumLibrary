@@ -16,7 +16,7 @@
 
 from robot.libraries.BuiltIn import BuiltIn
 
-from SeleniumLibrary.base import ContextAware
+from TestProjectSeleniumLibrary.base import ContextAware
 
 
 try:

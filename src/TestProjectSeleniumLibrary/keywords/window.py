@@ -15,12 +15,12 @@
 # limitations under the License.
 import time
 
-from SeleniumLibrary.utils import is_truthy, is_falsy, timestr_to_secs
+from TestProjectSeleniumLibrary.utils import is_truthy, is_falsy, timestr_to_secs
 from selenium.common.exceptions import NoSuchWindowException
 
-from SeleniumLibrary.base import keyword, LibraryComponent
-from SeleniumLibrary.locators import WindowManager
-from SeleniumLibrary.utils import plural_or_not, is_string
+from TestProjectSeleniumLibrary.base import keyword, LibraryComponent
+from TestProjectSeleniumLibrary.locators import WindowManager
+from TestProjectSeleniumLibrary.utils import plural_or_not, is_string
 
 
 class WindowKeywords(LibraryComponent):

@@ -13,7 +13,7 @@ except ImportError:
     else:
         raise
 
-from SeleniumLibrary.utils.path_formatter import _format_path
+from TestProjectSeleniumLibrary.utils.path_formatter import _format_path
 
 
 @pytest.fixture(scope='module')

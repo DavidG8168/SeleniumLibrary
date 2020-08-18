@@ -2,8 +2,8 @@ import pytest
 from mockito import when, mock, verify, verifyNoMoreInteractions, unstub, ANY
 from selenium import webdriver
 
-from SeleniumLibrary.keywords import BrowserManagementKeywords
-from SeleniumLibrary import SeleniumLibrary
+from TestProjectSeleniumLibrary.keywords import BrowserManagementKeywords
+from TestProjectSeleniumLibrary import SeleniumLibrary
 
 
 def test_set_selenium_timeout_only_affects_open_browsers():

@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from SeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
 
 
 class TableElementKeywords(LibraryComponent):

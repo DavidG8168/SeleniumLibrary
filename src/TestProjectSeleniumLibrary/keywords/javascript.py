@@ -19,7 +19,7 @@ from collections import namedtuple
 
 from robot.utils import plural_or_not, seq2str
 
-from SeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
 
 
 class JavaScriptKeywords(LibraryComponent):

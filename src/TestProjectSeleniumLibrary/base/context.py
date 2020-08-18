@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from SeleniumLibrary.utils import escape_xpath_value
+from TestProjectSeleniumLibrary.utils import escape_xpath_value
 
 
 class ContextAware(object):

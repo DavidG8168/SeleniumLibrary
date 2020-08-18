@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from SeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
 
 
 class PluginWithKwArgs(LibraryComponent):

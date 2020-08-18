@@ -2,7 +2,7 @@ import unittest
 
 from mockito import mock, unstub, when, verify, ANY
 
-from SeleniumLibrary.keywords import BrowserManagementKeywords
+from TestProjectSeleniumLibrary.keywords import BrowserManagementKeywords
 
 
 class KeywordArgumentsElementTest(unittest.TestCase):

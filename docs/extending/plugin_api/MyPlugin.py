@@ -1,7 +1,7 @@
 from robot.api import logger
 
-from SeleniumLibrary.base import LibraryComponent, keyword
-from SeleniumLibrary.locators import ElementFinder
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.locators import ElementFinder
 
 
 class DummyFinder(object):

@@ -19,9 +19,9 @@ from robot.utils import NormalizedDict
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.event_firing_webdriver import EventFiringWebElement
 
-from SeleniumLibrary.base import ContextAware
-from SeleniumLibrary.errors import ElementNotFound
-from SeleniumLibrary.utils import escape_xpath_value, events, is_falsy
+from TestProjectSeleniumLibrary.base import ContextAware
+from TestProjectSeleniumLibrary.errors import ElementNotFound
+from TestProjectSeleniumLibrary.utils import escape_xpath_value, events, is_falsy
 
 from .customlocator import CustomLocator
 

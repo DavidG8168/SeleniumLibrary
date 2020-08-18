@@ -1,6 +1,6 @@
-from SeleniumLibrary import SeleniumLibrary
-from SeleniumLibrary.base import keyword, LibraryComponent
-from SeleniumLibrary.keywords import BrowserManagementKeywords
+from TestProjectSeleniumLibrary import SeleniumLibrary
+from TestProjectSeleniumLibrary.base import keyword, LibraryComponent
+from TestProjectSeleniumLibrary.keywords import BrowserManagementKeywords
 
 
 class BrowserKeywords(LibraryComponent):

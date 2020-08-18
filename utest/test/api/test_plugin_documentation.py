@@ -3,7 +3,7 @@ import unittest
 
 from robot.utils import JYTHON, WINDOWS
 
-from SeleniumLibrary import SeleniumLibrary
+from TestProjectSeleniumLibrary import SeleniumLibrary
 
 try:
     from approvaltests.approvals import verify

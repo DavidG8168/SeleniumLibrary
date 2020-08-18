@@ -17,9 +17,9 @@ import os
 
 from robot.utils import get_link_path
 
-from SeleniumLibrary.base import LibraryComponent, keyword
-from SeleniumLibrary.utils import is_noney
-from SeleniumLibrary.utils.path_formatter import _format_path
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.utils import is_noney
+from TestProjectSeleniumLibrary.utils.path_formatter import _format_path
 
 DEFAULT_FILENAME_PAGE = 'selenium-screenshot-{index}.png'
 DEFAULT_FILENAME_ELEMENT = 'selenium-element-screenshot-{index}.png'

@@ -6,7 +6,7 @@ import pytest
 from mockito import mock, when, unstub, ANY
 from robot.utils import JYTHON, WINDOWS
 from selenium import webdriver
-from SeleniumLibrary.keywords.webdrivertools import SeleniumOptions, WebDriverCreator
+from TestProjectSeleniumLibrary.keywords.webdrivertools import SeleniumOptions, WebDriverCreator
 try:
     from approvaltests.approvals import verify_all
     from approvaltests.reporters.generic_diff_reporter_factory import GenericDiffReporterFactory

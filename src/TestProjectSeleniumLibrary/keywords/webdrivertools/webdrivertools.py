@@ -26,9 +26,9 @@ from robot.utils import ConnectionCache, StringIO
 from selenium import webdriver
 from selenium.webdriver import FirefoxProfile
 
-from SeleniumLibrary.utils import is_falsy, is_truthy, is_noney, is_string, PY3
-from SeleniumLibrary.keywords.webdrivertools.sl_file_detector import SelLibLocalFileDetector
-from SeleniumLibrary.utils.path_formatter import _format_path
+from TestProjectSeleniumLibrary.utils import is_falsy, is_truthy, is_noney, is_string, PY3
+from TestProjectSeleniumLibrary.keywords.webdrivertools.sl_file_detector import SelLibLocalFileDetector
+from TestProjectSeleniumLibrary.utils.path_formatter import _format_path
 
 if not PY3:
     FileNotFoundError = object

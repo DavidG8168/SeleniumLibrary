@@ -1,7 +1,7 @@
 from robot.api import logger
-from SeleniumLibrary import SeleniumLibrary
-from SeleniumLibrary.base import keyword
-from SeleniumLibrary.keywords import BrowserManagementKeywords
+from TestProjectSeleniumLibrary import SeleniumLibrary
+from TestProjectSeleniumLibrary.base import keyword
+from TestProjectSeleniumLibrary.keywords import BrowserManagementKeywords
 
 
 class InheritSeleniumLibrary(SeleniumLibrary):

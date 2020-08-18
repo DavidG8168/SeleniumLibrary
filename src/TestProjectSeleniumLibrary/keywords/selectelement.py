@@ -16,8 +16,8 @@
 
 from selenium.webdriver.support.ui import Select
 
-from SeleniumLibrary.base import LibraryComponent, keyword
-from SeleniumLibrary.utils import is_truthy, plural_or_not as s
+from TestProjectSeleniumLibrary.base import LibraryComponent, keyword
+from TestProjectSeleniumLibrary.utils import is_truthy, plural_or_not as s
 
 
 class SelectElementKeywords(LibraryComponent):
