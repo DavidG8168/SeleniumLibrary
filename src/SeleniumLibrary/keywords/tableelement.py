@@ -41,24 +41,45 @@ class TableElementKeywords(LibraryComponent):
         row = int(row)
         column = int(column)
         if row == 0 or column == 0:
+            self.driver.report().step(description="Get table cell at locator " + locator,
+                                      message='Both row and column must be non-zero, got row %d and column %d.' % (row, column),
+                                      passed=False,
+                                      screenshot=True)
             raise ValueError('Both row and column must be non-zero, '
                              'got row %d and column %d.' % (row, column))
         try:
             cell = self._get_cell(locator, row, column)
-        except AssertionError:
+            self.driver.report().step(description="Get table cell at locator " + locator,
+                                      message="Got cell " + cell.text, passed=True,
+                                      screenshot=False)
+        except AssertionError as e:
             self.log_source(loglevel)
+            self.driver.report().step(description="Get table cell at locator " + locator,
+                                      message='Failed to get table cell. Error: ' + str(e),
+                                      passed=False,
+                                      screenshot=True)
             raise
         return cell.text
 
     def _get_cell(self, locator, row, column):
         rows = self._get_rows(locator, row)
         if len(rows) < abs(row):
+            self.driver.report().step(description="Get table cell at locator " + locator,
+                                      message="Table '%s' should have had at least %d rows but had only %d."
+                                              % (locator, abs(row), len(rows)),
+                                      passed=False,
+                                      screenshot=True)
             raise AssertionError("Table '%s' should have had at least %d "
                                  "rows but had only %d."
                                  % (locator, abs(row), len(rows)))
         index = row - 1 if row > 0 else row
         cells = rows[index].find_elements_by_xpath('./th|./td')
         if len(cells) < abs(column):
+            self.driver.report().step(description="Get table cell at locator " + locator,
+                                      message="Table '%s' row %d should have had at least %d columns but had only %d."
+                                              % (locator, row, abs(column), len(cells)),
+                                      passed=False,
+                                      screenshot=True)
             raise AssertionError("Table '%s' row %d should have had at "
                                  "least %d columns but had only %d."
                                  % (locator, row, abs(column), len(cells)))
@@ -84,12 +105,24 @@ class TableElementKeywords(LibraryComponent):
         """
         content = self.get_table_cell(locator, row, column, loglevel)
         if expected not in content:
+            self.driver.report().step(description="Table cell should contain at locator " + locator,
+                                      message="Table '%s' cell on row %s and column %s should have contained text '%s' but it had '%s'."
+                                              % (locator,
+                                                 row,
+                                                 column,
+                                                 expected,
+                                                 content),
+                                      passed=False,
+                                      screenshot=True)
             self.ctx.log_source(loglevel)
             raise AssertionError("Table '%s' cell on row %s and column %s "
                                  "should have contained text '%s' but it had "
                                  "'%s'."
                                  % (locator, row, column, expected, content))
         self.info("Table cell contains '%s'." % content)
+        self.driver.report().step(description="Table cell should contain at locator " + locator,
+                                  message="Table cell contains " + content, passed=True,
+                                  screenshot=False)
 
     @keyword
     def table_column_should_contain(self, locator, column, expected, loglevel='TRACE'):
@@ -111,9 +144,19 @@ class TableElementKeywords(LibraryComponent):
         """
         element = self._find_by_column(locator, column, expected)
         if element is None:
+            self.driver.report().step(description="Table column should contain at locator " + locator,
+                                      message="Table '%s' column %s did not contain text '%s'."
+                                              % (locator,
+                                                 column,
+                                                 expected),
+                                      passed=False,
+                                      screenshot=True)
             self.ctx.log_source(loglevel)
             raise AssertionError("Table '%s' column %s did not contain text "
                                  "'%s'." % (locator, column, expected))
+        self.driver.report().step(description="Table column should contain at locator " + locator,
+                                  message="Table column contains " + expected, passed=True,
+                                  screenshot=False)
 
     @keyword
     def table_footer_should_contain(self, locator, expected, loglevel='TRACE'):
@@ -130,9 +173,18 @@ class TableElementKeywords(LibraryComponent):
         """
         element = self._find_by_footer(locator, expected)
         if element is None:
+            self.driver.report().step(description="Table footer should contain at locator " + locator,
+                                      message="Table '%s' footer did not contain text '%s'."
+                                              % (locator,
+                                                 expected),
+                                      passed=False,
+                                      screenshot=True)
             self.ctx.log_source(loglevel)
             raise AssertionError("Table '%s' footer did not contain text "
                                  "'%s'." % (locator, expected))
+        self.driver.report().step(description="Table footer should contain at locator " + locator,
+                                  message="Table footer contains " + expected, passed=True,
+                                  screenshot=False)
 
     @keyword
     def table_header_should_contain(self, locator, expected, loglevel='TRACE'):
@@ -149,9 +201,18 @@ class TableElementKeywords(LibraryComponent):
         """
         element = self._find_by_header(locator, expected)
         if element is None:
+            self.driver.report().step(description="Table header should contain at locator " + locator,
+                                      message="Table '%s' header did not contain text '%s'."
+                                              % (locator,
+                                                 expected),
+                                      passed=False,
+                                      screenshot=True)
             self.ctx.log_source(loglevel)
             raise AssertionError("Table '%s' header did not contain text "
                                  "'%s'." % (locator, expected))
+        self.driver.report().step(description="Table header should contain at locator " + locator,
+                                  message="Table header contains " + expected, passed=True,
+                                  screenshot=False)
 
     @keyword
     def table_row_should_contain(self, locator, row, expected, loglevel='TRACE'):
@@ -173,9 +234,19 @@ class TableElementKeywords(LibraryComponent):
         """
         element = self._find_by_row(locator, row, expected)
         if element is None:
+            self.driver.report().step(description="Table row should contain at locator " + locator,
+                                      message="Table '%s' row %s did not contain text '%s'."
+                                              % (locator,
+                                                 row,
+                                                 expected),
+                                      passed=False,
+                                      screenshot=True)
             self.ctx.log_source(loglevel)
             raise AssertionError("Table '%s' row %s did not contain text "
                                  "'%s'." % (locator, row, expected))
+        self.driver.report().step(description="Table row should contain at locator " + locator,
+                                  message="Table row contains " + expected, passed=True,
+                                  screenshot=False)
 
     @keyword
     def table_should_contain(self, locator, expected, loglevel='TRACE'):
@@ -189,9 +260,18 @@ class TableElementKeywords(LibraryComponent):
         """
         element = self._find_by_content(locator, expected)
         if element is None:
+            self.driver.report().step(description="Table should contain at locator " + locator,
+                                      message="Table '%s' did not contain text '%s'."
+                                              % (locator,
+                                                 expected),
+                                      passed=False,
+                                      screenshot=True)
             self.ctx.log_source(loglevel)
             raise AssertionError("Table '%s' did not contain text '%s'."
                                  % (locator, expected))
+        self.driver.report().step(description="Table should contain at locator " + locator,
+                                  message="Table contains " + expected, passed=True,
+                                  screenshot=False)
 
     def _find_by_content(self, table_locator, content):
         return self._find(table_locator, 'xpath:.//*', content)
@@ -215,6 +295,10 @@ class TableElementKeywords(LibraryComponent):
     def _index_to_position(self, index):
         index = int(index)
         if index == 0:
+            self.driver.report().step(description="Table row/column should contain at locator " + locator,
+                                      message="Row and column indexes must be non-zero.",
+                                      passed=False,
+                                      screenshot=True)
             raise ValueError('Row and column indexes must be non-zero.')
         if index > 0:
             return str(index)
